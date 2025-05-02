@@ -12,121 +12,246 @@
     <style>
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #f8f9fa;
-            background-image: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background-color: #fff5f0;
+            background-image: linear-gradient(135deg, #fff9f5 0%, #fff2eb 100%);
             background-attachment: fixed;
+            margin: 0;
+            padding: 0;
+            color: #33303a;
         }
         .quiz-container {
-            max-width: 800px;
-            margin: 0 auto;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            border-radius: 16px;
+            max-width: 1000px;
+            margin: 20px auto;
+            box-shadow: 0 10px 30px rgba(255, 150, 100, 0.15);
+            border-radius: 20px;
             overflow: hidden;
-            background: white;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 178, 142, 0.3);
         }
         .quiz-header {
-            background: linear-gradient(90deg, #4f46e5, #6366f1);
+            background: linear-gradient(90deg, #FF9664, #FFB28E);
             color: white;
-            padding: 1.5rem;
+            padding: 1.8rem;
             text-align: center;
             position: relative;
+            box-shadow: 0 4px 15px -5px rgba(255, 150, 100, 0.4);
+        }
+        .quiz-header h1 {
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
         }
         .quiz-header::after {
             content: "";
             position: absolute;
-            bottom: -10px;
+            bottom: -15px;
             left: 0;
             right: 0;
             margin: 0 auto;
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 15px solid #6366f1;
+            border-left: 20px solid transparent;
+            border-right: 20px solid transparent;
+            border-top: 20px solid #FFB28E;
         }
         .question-card {
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(255, 150, 100, 0.08);
+            border: 1px solid rgba(255, 178, 142, 0.2);
+            transition: all 0.3s;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
         .question-card:hover {
             transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(255, 150, 100, 0.12);
+        }
+        .question-title {
+            color: #FF7F50;
+            border-bottom: 2px solid rgba(255, 150, 100, 0.2);
         }
         .option-label {
             transition: all 0.2s;
-            border-radius: 8px;
-            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            padding: 0.7rem 1.2rem;
+            margin: 0.3rem 0;
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 178, 142, 0.15);
         }
         .option-label:hover {
-            background-color: #f3f4f6;
+            background: rgba(255, 235, 225, 0.7);
+            border: 1px solid rgba(255, 178, 142, 0.3);
         }
-        .btn-primary {
-            background: linear-gradient(90deg, #4f46e5, #6366f1);
+        .btn-watch-complete {
+            background: linear-gradient(90deg, #FF5C3F, #FF7F50);
+            color: white;
             transition: all 0.3s;
             transform: translateY(0);
-            box-shadow: 0 4px 6px rgba(99, 102, 241, 0.3);
+            box-shadow: 0 6px 12px rgba(255, 92, 63, 0.3);
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 100px;
+            text-align: center;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+            border: none;
+            outline: none;
         }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(99, 102, 241, 0.4);
+        .btn-watch-complete:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 92, 63, 0.4);
+            background: linear-gradient(90deg, #FF4D2E, #FF7043);
         }
-        .btn-primary:active {
+        .btn-watch-complete:active {
             transform: translateY(1px);
         }
-        .btn-secondary {
-            background: linear-gradient(90deg, #8b5cf6, #a78bfa);
+        .btn-submit {
+            background: linear-gradient(90deg, #FF7F50, #FFAB76);
+            color: white;
             transition: all 0.3s;
             transform: translateY(0);
-            box-shadow: 0 4px 6px rgba(139, 92, 246, 0.3);
+            box-shadow: 0 6px 12px rgba(255, 127, 80, 0.3);
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 100px;
+            text-align: center;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            outline: none;
         }
-        .btn-secondary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 10px rgba(139, 92, 246, 0.4);
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 127, 80, 0.4);
+            background: linear-gradient(90deg, #FF7043, #FFA369);
+        }
+        .btn-submit:disabled {
+            background: linear-gradient(90deg, #FFD4C2, #FFE6DB);
+            color: #CC9E8A;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn-retry {
+            background: linear-gradient(90deg, #FF9D7D, #FFC4B0);
+            color: white;
+            transition: all 0.3s;
+            transform: translateY(0);
+            box-shadow: 0 6px 12px rgba(255, 157, 125, 0.3);
+            font-size: 1.1rem;
+            padding: 1rem 1.5rem;
+            border-radius: 100px;
+            text-align: center;
+            font-weight: bold;
+            display: block;
+            width: 100%;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+        .btn-retry:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 157, 125, 0.4);
+            background: linear-gradient(90deg, #FF8E6E, #FFB5A1);
         }
         .video-container {
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            border-radius: 12px;
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(255, 150, 100, 0.15);
+            border: 3px solid rgba(255, 178, 142, 0.3);
+        }
+        .video-wrapper {
+            position: relative;
+            padding-top: 56.25%; /* 16:9 比例 */
+            height: 0;
             overflow: hidden;
         }
+        .video-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
         .result-card {
-            background: linear-gradient(145deg, #e6f7ff, #f0f9ff);
-            border-left: 5px solid #4f46e5;
+            background: linear-gradient(145deg, rgba(255, 242, 235, 0.8), rgba(255, 235, 225, 0.8));
+            border-left: 5px solid #FF9664;
+            border-radius: 12px;
         }
         input[type="checkbox"], input[type="radio"] {
-            transform: scale(1.2);
-            margin-right: 10px;
-            accent-color: #4f46e5;
+            transform: scale(1.3);
+            margin-right: 12px;
+            accent-color: #FF7F50;
         }
         .correct-answer {
-            color: #10b981;
-            font-weight: 500;
+            color: #FF7F50;
+            font-weight: 600;
+            background: rgba(255, 235, 225, 0.7);
+            border-radius: 8px;
+            padding: 8px 12px;
         }
         .incorrect-answer {
-            color: #ef4444;
-            font-weight: 500;
+            color: #FF5C3F;
+            font-weight: 600;
+            background: rgba(255, 235, 225, 0.7);
+            border-radius: 8px;
+            padding: 8px 12px;
         }
         .quiz-footer {
             font-size: 0.8rem;
-            color: #6b7280;
+            color: #FF9D7D;
             text-align: center;
             padding: 1rem;
-            background-color: #f9fafb;
-            border-top: 1px solid #e5e7eb;
+            background-color: rgba(255, 242, 235, 0.5);
+            border-top: 1px solid rgba(255, 178, 142, 0.2);
+        }
+        .steps-title {
+            color: #FF7F50;
+            font-weight: bold;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: rgba(255, 235, 225, 0.5);
+            border-radius: 100px;
+            border: 2px solid rgba(255, 178, 142, 0.2);
         }
         @media (max-width: 640px) {
             .quiz-container {
                 width: 95%;
-                margin: 1rem auto;
+                margin: 10px auto;
+                border-radius: 16px;
+            }
+            .quiz-header {
+                padding: 1.2rem;
+            }
+            .quiz-header h1 {
+                font-size: 1.5rem;
+            }
+            .option-label {
+                padding: 0.6rem 1rem;
+            }
+            .btn-watch-complete, .btn-submit, .btn-retry {
+                font-size: 1rem;
+                padding: 0.8rem 1.2rem;
             }
         }
     </style>
 </head>
-<body class="py-8">
+<body class="py-4 px-2">
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect } = React;
 
         const TaiwaneseAnimalQuiz = () => {
             const [videoWatched, setVideoWatched] = useState(false);
@@ -139,7 +264,19 @@
             });
             const [submitted, setSubmitted] = useState(false);
             const [result, setResult] = useState('');
-            const [showConfetti, setShowConfetti] = useState(false);
+            const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+            // 監聽視窗大小變化
+            useEffect(() => {
+                const handleResize = () => {
+                    setWindowWidth(window.innerWidth);
+                };
+
+                window.addEventListener('resize', handleResize);
+                return () => {
+                    window.removeEventListener('resize', handleResize);
+                };
+            }, []);
 
             // 問題及選項
             const questions = {
@@ -177,10 +314,9 @@
 
             const handleWatchComplete = () => {
                 setVideoWatched(true);
-                window.scrollTo({
-                    top: document.getElementById('questions-section').offsetTop - 20,
-                    behavior: 'smooth'
-                });
+                setTimeout(() => {
+                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             };
 
             const handleCheckboxChange = (questionId, option) => {
@@ -219,25 +355,20 @@
                 });
                 
                 if (correct === 5) {
-                    setResult('恭喜你全部答對！成功過關！');
-                    setShowConfetti(true);
+                    setResult('恭喜你全部答對！成功過關！ 🎉');
                 } else {
-                    setResult(`你答對了 ${correct}/5 題，再試一次吧！`);
+                    setResult(`你答對了 ${correct}/5 題，再試一次吧！ 💪`);
                 }
 
                 // 滾動到結果區域
                 setTimeout(() => {
-                    window.scrollTo({
-                        top: document.getElementById('result-section').offsetTop - 20,
-                        behavior: 'smooth'
-                    });
+                    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 300);
             };
 
             const resetQuiz = () => {
                 setSubmitted(false);
                 setResult('');
-                setShowConfetti(false);
                 setAnswers({
                     q1: [],
                     q2: '',
@@ -246,10 +377,9 @@
                     q5: ''
                 });
                 // 滾動到問題區域
-                window.scrollTo({
-                    top: document.getElementById('questions-section').offsetTop - 20,
-                    behavior: 'smooth'
-                });
+                setTimeout(() => {
+                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
             };
 
             // 檢查是否回答完所有問題
@@ -263,20 +393,28 @@
                 );
             };
 
+            // 根據螢幕寬度決定問題選項的欄位數
+            const getColumnClass = () => {
+                if (windowWidth < 768) {
+                    return "grid-cols-1"; // 手機螢幕一欄
+                } else {
+                    return "grid-cols-2"; // 電腦螢幕兩欄
+                }
+            };
+
             return (
                 <div className="quiz-container">
                     <div className="quiz-header">
                         <h1 className="text-3xl font-bold">台語動物教學小遊戲</h1>
-                        <p className="mt-2 opacity-80">觀看影片，回答問題，測試你的台語能力！</p>
+                        <p className="mt-2 opacity-90">觀看影片，回答問題，測試你的台語能力！</p>
                     </div>
                     
-                    <div className="p-6">
-                        <div className="mb-8">
-                            <h2 className="text-xl font-bold mb-4 text-indigo-700">步驟一：觀看影片</h2>
+                    <div className="p-5 md:p-8">
+                        <div className="mb-10">
+                            <div className="steps-title">步驟一：觀看影片</div>
                             <div className="video-container">
-                                <div className="relative pt-9 h-64 md:h-96 overflow-hidden">
+                                <div className="video-wrapper">
                                     <iframe 
-                                        className="absolute top-0 left-0 w-full h-full"
                                         src="https://www.youtube.com/embed/StTvn9R6VME" 
                                         title="台語動物教學影片"
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
@@ -286,23 +424,23 @@
                             </div>
                             <button 
                                 onClick={handleWatchComplete} 
-                                className="mt-4 btn-primary text-white font-bold py-3 px-6 rounded-full w-full"
+                                className="btn-watch-complete"
                             >
-                                我已經看完影片了 →
+                                👍 我已經看完影片了，開始答題！
                             </button>
                         </div>
 
                         {videoWatched && (
                             <div id="questions-section" className="mt-8 mb-6">
-                                <h2 className="text-xl font-bold mb-4 text-indigo-700">步驟二：回答問題</h2>
+                                <div className="steps-title">步驟二：回答問題</div>
                                 
                                 <div className="space-y-6">
                                     {/* 問題 1: 多選題 */}
-                                    <div className="question-card p-5 bg-white">
-                                        <h3 className="block mb-3 font-bold text-lg border-b pb-2 text-gray-800">
+                                    <div className="question-card p-5 md:p-6">
+                                        <h3 className="question-title block mb-4 font-bold text-lg pb-2">
                                             1. {questions.q1.question}
                                         </h3>
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3">
+                                        <div className={`grid ${getColumnClass()} gap-2 mt-4`}>
                                             {questions.q1.options.map((option, index) => (
                                                 <div key={index} className="option-label flex items-center">
                                                     <input
@@ -311,16 +449,16 @@
                                                         checked={answers.q1.includes(option)}
                                                         onChange={() => handleCheckboxChange('q1', option)}
                                                         disabled={submitted}
-                                                        className="mr-2 h-4 w-4"
+                                                        className="mr-3 h-5 w-5"
                                                     />
-                                                    <label htmlFor={`q1-${index}`} className="cursor-pointer flex-grow">
+                                                    <label htmlFor={`q1-${index}`} className="cursor-pointer flex-grow text-lg">
                                                         {option}
                                                     </label>
                                                 </div>
                                             ))}
                                         </div>
                                         {submitted && (
-                                            <p className={`mt-3 p-2 rounded ${answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') ? 'correct-answer' : 'incorrect-answer'}`}>
+                                            <p className={`mt-4 ${answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') ? 'correct-answer' : 'incorrect-answer'}`}>
                                                 {answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') 
                                                     ? '✓ 正確！' 
                                                     : `✗ 正確答案：${questions.q1.correctAnswer.join('、')}`}
@@ -330,11 +468,11 @@
                                     
                                     {/* 問題 2-5: 單選題 */}
                                     {['q2', 'q3', 'q4', 'q5'].map((qId, qIndex) => (
-                                        <div key={qId} className="question-card p-5 bg-white">
-                                            <h3 className="block mb-3 font-bold text-lg border-b pb-2 text-gray-800">
+                                        <div key={qId} className="question-card p-5 md:p-6">
+                                            <h3 className="question-title block mb-4 font-bold text-lg pb-2">
                                                 {qIndex + 2}. {questions[qId].question}
                                             </h3>
-                                            <div className="grid grid-cols-1 gap-2 mt-3">
+                                            <div className="grid grid-cols-1 gap-2 mt-4">
                                                 {questions[qId].options.map((option, index) => (
                                                     <div key={index} className="option-label flex items-center">
                                                         <input
@@ -344,16 +482,16 @@
                                                             checked={answers[qId] === option}
                                                             onChange={() => handleRadioChange(qId, option)}
                                                             disabled={submitted}
-                                                            className="mr-2 h-4 w-4"
+                                                            className="mr-3 h-5 w-5"
                                                         />
-                                                        <label htmlFor={`${qId}-${index}`} className="cursor-pointer flex-grow">
+                                                        <label htmlFor={`${qId}-${index}`} className="cursor-pointer flex-grow text-lg">
                                                             {option}
                                                         </label>
                                                     </div>
                                                 ))}
                                             </div>
                                             {submitted && (
-                                                <p className={`mt-3 p-2 rounded ${answers[qId] === questions[qId].correctAnswer ? 'correct-answer' : 'incorrect-answer'}`}>
+                                                <p className={`mt-4 ${answers[qId] === questions[qId].correctAnswer ? 'correct-answer' : 'incorrect-answer'}`}>
                                                     {answers[qId] === questions[qId].correctAnswer
                                                         ? '✓ 正確！'
                                                         : `✗ 正確答案：${questions[qId].correctAnswer}`}
@@ -367,22 +505,20 @@
                                             <button 
                                                 onClick={handleSubmit} 
                                                 disabled={!isAllAnswered()}
-                                                className={`w-full py-3 px-6 rounded-full font-bold text-center transform transition-all ${isAllAnswered() 
-                                                    ? 'btn-primary text-white' 
-                                                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'}`}
+                                                className={isAllAnswered() ? 'btn-submit' : 'btn-submit disabled'}
                                             >
-                                                {isAllAnswered() ? '提交答案' : '請回答所有問題'}
+                                                {isAllAnswered() ? '📝 提交答案' : '⚠️ 請回答所有問題'}
                                             </button>
                                         ) : (
-                                            <div className="result-card p-5 rounded-lg my-6">
-                                                <p className="text-xl font-bold text-center p-3 rounded">
+                                            <div className="result-card p-6 rounded-lg my-6">
+                                                <p className="text-xl font-bold text-center p-3 rounded text-orange-600">
                                                     {result}
                                                 </p>
                                                 <button 
                                                     onClick={resetQuiz}
-                                                    className="btn-secondary text-white font-bold py-3 px-6 rounded-full w-full mt-4"
+                                                    className="btn-retry mt-4"
                                                 >
-                                                    再試一次
+                                                    🔄 再試一次
                                                 </button>
                                             </div>
                                         )}
