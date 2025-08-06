@@ -3,539 +3,892 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台語動物教學小遊戲</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>體智活動動畫產生器</title>
     <style>
-        body {
-            font-family: 'Noto Sans TC', sans-serif;
-            background-color: #fff5f0;
-            background-image: linear-gradient(135deg, #fff9f5 0%, #fff2eb 100%);
-            background-attachment: fixed;
+        * {
             margin: 0;
             padding: 0;
-            color: #33303a;
+            box-sizing: border-box;
         }
-        .quiz-container {
-            max-width: 1000px;
-            margin: 20px auto;
-            box-shadow: 0 10px 30px rgba(255, 150, 100, 0.15);
+
+        body {
+            font-family: 'Microsoft YaHei', '微軟雅黑', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+        }
+
+        /* 手機橫屏優化 */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            body {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 15px;
+                min-height: calc(100vh - 10px);
+            }
+            
+            .header h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .control-group {
+                padding: 15px;
+            }
+            
+            .control-group h3 {
+                font-size: 1.1em;
+                margin-bottom: 10px;
+            }
+            
+            .form-row {
+                gap: 8px;
+                margin-bottom: 10px;
+            }
+            
+            input[type="file"], input[type="text"], input[type="number"], select {
+                padding: 8px;
+                font-size: 13px;
+            }
+            
+            button {
+                padding: 10px 15px;
+                font-size: 13px;
+            }
+            
+            .item-list {
+                max-height: 250px;
+            }
+            
+            .item {
+                padding: 6px;
+                margin-bottom: 6px;
+            }
+            
+            .item img {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .remove-btn {
+                padding: 3px 6px;
+                font-size: 11px;
+            }
+        }
+
+        /* 一般手機直屏優化 */
+        @media screen and (max-width: 768px) and (orientation: portrait) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+
+        /* 平板橫屏優化 */
+        @media screen and (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+            .header {
+                max-width: 1200px;
+            }
+            
+            .controls {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
             border-radius: 20px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.85);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 178, 142, 0.3);
-        }
-        .quiz-header {
-            background: linear-gradient(90deg, #FF9664, #FFB28E);
-            color: white;
-            padding: 1.8rem;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 15px -5px rgba(255, 150, 100, 0.4);
-        }
-        .quiz-header h1 {
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .quiz-header::after {
-            content: "";
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            right: 0;
             margin: 0 auto;
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 20px solid #FFB28E;
+            max-width: 1400px;
+            min-height: calc(100vh - 40px);
         }
-        .question-card {
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(255, 150, 100, 0.08);
-            border: 1px solid rgba(255, 178, 142, 0.2);
-            transition: all 0.3s;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+
+        .header h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
         }
-        .question-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(255, 150, 100, 0.12);
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
-        .question-title {
-            color: #FF7F50;
-            border-bottom: 2px solid rgba(255, 150, 100, 0.2);
-        }
-        .option-label {
-            transition: all 0.2s;
+
+        .control-group {
+            background: white;
+            padding: 20px;
             border-radius: 12px;
-            padding: 0.7rem 1.2rem;
-            margin: 0.3rem 0;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 178, 142, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
-        .option-label:hover {
-            background: rgba(255, 235, 225, 0.7);
-            border: 1px solid rgba(255, 178, 142, 0.3);
+
+        .control-group h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
         }
-        .btn-watch-complete {
-            background: linear-gradient(90deg, #FF5C3F, #FF7F50);
-            color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 92, 63, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
-            border: none;
+
+        .form-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+
+        input[type="file"], input[type="text"], input[type="number"], select {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="file"]:focus, input[type="text"]:focus, input[type="number"]:focus, select:focus {
             outline: none;
+            border-color: #667eea;
         }
-        .btn-watch-complete:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 92, 63, 0.4);
-            background: linear-gradient(90deg, #FF4D2E, #FF7043);
-        }
-        .btn-watch-complete:active {
-            transform: translateY(1px);
-        }
-        .btn-submit {
-            background: linear-gradient(90deg, #FF7F50, #FFAB76);
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 127, 80, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
-            cursor: pointer;
             border: none;
-            outline: none;
-        }
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 127, 80, 0.4);
-            background: linear-gradient(90deg, #FF7043, #FFA369);
-        }
-        .btn-submit:disabled {
-            background: linear-gradient(90deg, #FFD4C2, #FFE6DB);
-            color: #CC9E8A;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-retry {
-            background: linear-gradient(90deg, #FF9D7D, #FFC4B0);
-            color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 157, 125, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
+            padding: 12px 20px;
+            border-radius: 8px;
             cursor: pointer;
-            border: none;
-            outline: none;
+            font-size: 14px;
+            font-weight: bold;
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .btn-retry:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 157, 125, 0.4);
-            background: linear-gradient(90deg, #FF8E6E, #FFB5A1);
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         }
-        .video-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(255, 150, 100, 0.15);
-            border: 3px solid rgba(255, 178, 142, 0.3);
+
+        .item-list {
+            max-height: 400px;
+            overflow-y: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            padding: 10px;
+            margin-top: 10px;
         }
-        .video-wrapper {
-            position: relative;
-            padding-top: 56.25%; /* 16:9 比例 */
-            height: 0;
-            overflow: hidden;
+
+        .item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            margin-bottom: 8px;
+            background: #f8f9fa;
+            border-radius: 6px;
         }
-        .video-wrapper iframe {
-            position: absolute;
+
+        .item img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .remove-btn {
+            background: #dc3545;
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .animation-container {
+            position: fixed;
             top: 0;
             left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            z-index: 9999;
+        }
+
+        .animation-screen {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+            display: none;
+            background: linear-gradient(135deg, #ff6b6b, #ffd93d, #6bcf7f, #4ecdc4, #45b7d1, #96ceb4);
+            background-size: 300% 300%;
+            animation: gradientShift 6s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .slide {
             width: 100%;
             height: 100%;
-            border: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
-        .result-card {
-            background: linear-gradient(145deg, rgba(255, 242, 235, 0.8), rgba(255, 235, 225, 0.8));
-            border-left: 5px solid #FF9664;
-            border-radius: 12px;
+
+        .slide.active {
+            opacity: 1;
         }
-        input[type="checkbox"], input[type="radio"] {
-            transform: scale(1.3);
-            margin-right: 12px;
-            accent-color: #FF7F50;
+
+        .content-container {
+            width: 90%;
+            height: 80%;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
         }
-        .correct-answer {
-            color: #FF7F50;
-            font-weight: 600;
-            background: rgba(255, 235, 225, 0.7);
-            border-radius: 8px;
-            padding: 8px 12px;
+
+        /* Safari 特殊支援 */
+        @supports (-webkit-appearance: none) {
+            .slide-text {
+                -webkit-hyphens: auto;
+                -webkit-line-break: after-white-space;
+            }
         }
-        .incorrect-answer {
-            color: #FF5C3F;
-            font-weight: 600;
-            background: rgba(255, 235, 225, 0.7);
-            border-radius: 8px;
-            padding: 8px 12px;
+
+        /* Chrome 和其他 Webkit 瀏覽器 */
+        .slide-text {
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
-        .quiz-footer {
-            font-size: 0.8rem;
-            color: #FF9D7D;
-            text-align: center;
-            padding: 1rem;
-            background-color: rgba(255, 242, 235, 0.5);
-            border-top: 1px solid rgba(255, 178, 142, 0.2);
+
+        /* 確保在所有瀏覽器中文字不會溢出 */
+        .content-container {
+            width: 90%;
+            height: 80%;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            box-sizing: border-box;
         }
-        .steps-title {
-            color: #FF7F50;
+
+        .slide-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide-text {
+            font-size: 12em;
             font-weight: bold;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 235, 225, 0.5);
-            border-radius: 100px;
-            border: 2px solid rgba(255, 178, 142, 0.2);
+            color: #333;
+            text-align: center;
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            hyphens: auto;
+            max-width: 100%;
+            max-height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            box-sizing: border-box;
         }
-        @media (max-width: 640px) {
-            .quiz-container {
+
+        .gesture-instruction {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.5em;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translateX(-50%) scale(1); }
+            50% { transform: translateX(-50%) scale(1.05); }
+        }
+
+        .gesture-icons {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .gesture-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: bold;
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        .correct { background: #28a745; }
+        .incorrect { background: #dc3545; }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .start-screen {
+            text-align: center;
+            color: white;
+            padding: 50px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .start-screen h2 {
+            font-size: 4em;
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .start-screen p {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s 0.2s both;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            line-height: 1.4;
+        }
+
+        .start-btn {
+            font-size: 2em;
+            padding: 25px 50px;
+            animation: fadeInUp 1s 0.4s both;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animation-controls {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .control-btn {
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-2px);
+        }
+
+        .paused .slide {
+            animation-play-state: paused;
+        }
+
+        /* 動畫畫面手機適配 */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .start-screen h2 {
+                font-size: 2.5em;
+                margin-bottom: 20px;
+            }
+
+            .start-screen p {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .start-btn {
+                font-size: 1.3em;
+                padding: 15px 30px;
+                margin-top: 10px;
+            }
+            
+            .animation-controls {
+                top: 15px;
+                left: 15px;
+                gap: 10px;
+            }
+            
+            .control-btn {
+                padding: 8px 15px;
+                font-size: 14px;
+            }
+            
+            .slide-text {
+                font-size: 10em;
+            }
+            
+            .content-container {
                 width: 95%;
-                margin: 10px auto;
-                border-radius: 16px;
+                height: 85%;
+                gap: 20px;
+                padding: 20px;
             }
-            .quiz-header {
-                padding: 1.2rem;
+            
+            .gesture-icons {
+                top: 15px;
+                right: 15px;
             }
-            .quiz-header h1 {
-                font-size: 1.5rem;
+            
+            .gesture-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
             }
-            .option-label {
-                padding: 0.6rem 1rem;
+            
+            .gesture-instruction {
+                bottom: 30px;
+                font-size: 1.2em;
+                padding: 10px 20px;
             }
-            .btn-watch-complete, .btn-submit, .btn-retry {
-                font-size: 1rem;
-                padding: 0.8rem 1.2rem;
-            }
+        }
+
+        .hidden {
+            display: none;
         }
     </style>
 </head>
-<body class="py-4 px-2">
-    <div id="root"></div>
-
-    <script type="text/babel">
-        const { useState, useEffect } = React;
-
-        const TaiwaneseAnimalQuiz = () => {
-            const [videoWatched, setVideoWatched] = useState(false);
-            const [answers, setAnswers] = useState({
-                q1: [],
-                q2: '',
-                q3: '',
-                q4: '',
-                q5: ''
-            });
-            const [submitted, setSubmitted] = useState(false);
-            const [result, setResult] = useState('');
-            const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-            // 監聽視窗大小變化
-            useEffect(() => {
-                const handleResize = () => {
-                    setWindowWidth(window.innerWidth);
-                };
-
-                window.addEventListener('resize', handleResize);
-                return () => {
-                    window.removeEventListener('resize', handleResize);
-                };
-            }, []);
-
-            // 問題及選項
-            const questions = {
-                q1: {
-                    question: '請問剛剛有哪些動物的台語教學？（可複選）',
-                    options: ['斑馬', '麒麟', '長頸鹿', '猴子', '企鵝', '獅子', '老虎'],
-                    type: 'checkbox',
-                    correctAnswer: ['長頸鹿', '斑馬', '企鵝']
-                },
-                q2: {
-                    question: '最先教的動物是？',
-                    options: ['企鵝', '長頸鹿', '斑馬', '獅子'],
-                    type: 'radio',
-                    correctAnswer: '斑馬'
-                },
-                q3: {
-                    question: '誇讚人深藏不漏的台語怎麼說？',
-                    options: ['深藏不露', '大隻雞慢啼', '烏矸仔貯豆油', '金玉其外', '有錢開無路'],
-                    type: 'radio',
-                    correctAnswer: '烏矸仔貯豆油'
-                },
-                q4: {
-                    question: '豬哥亮哪個動物的字不會寫？',
-                    options: ['企鵝', '馬來貘', '斑馬', '麒麟', '長頸鹿'],
-                    type: 'radio',
-                    correctAnswer: '麒麟'
-                },
-                q5: {
-                    question: '三重大學是什麼意思呢？',
-                    options: ['三重的一所社區大學', '很會念書', '沒有讀書的意思', '有很多學問'],
-                    type: 'radio',
-                    correctAnswer: '沒有讀書的意思'
-                }
-            };
-
-            const handleWatchComplete = () => {
-                setVideoWatched(true);
-                setTimeout(() => {
-                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            };
-
-            const handleCheckboxChange = (questionId, option) => {
-                setAnswers(prev => {
-                    const newAnswers = { ...prev };
-                    if (newAnswers[questionId].includes(option)) {
-                        newAnswers[questionId] = newAnswers[questionId].filter(item => item !== option);
-                    } else {
-                        newAnswers[questionId] = [...newAnswers[questionId], option];
-                    }
-                    return newAnswers;
-                });
-            };
-
-            const handleRadioChange = (questionId, option) => {
-                setAnswers(prev => ({
-                    ...prev,
-                    [questionId]: option
-                }));
-            };
-
-            const handleSubmit = () => {
-                setSubmitted(true);
-                
-                // Check answers
-                let correct = 0;
-                
-                // 檢查多選題 (q1)
-                const q1Answer = answers.q1.sort().join(',');
-                const q1Correct = questions.q1.correctAnswer.sort().join(',');
-                if (q1Answer === q1Correct) correct++;
-                
-                // 檢查單選題 (q2-q5)
-                ['q2', 'q3', 'q4', 'q5'].forEach(key => {
-                    if (answers[key] === questions[key].correctAnswer) correct++;
-                });
-                
-                if (correct === 5) {
-                    setResult('恭喜你全部答對！成功過關！ 🎉');
-                } else {
-                    setResult(`你答對了 ${correct}/5 題，再試一次吧！ 💪`);
-                }
-
-                // 滾動到結果區域
-                setTimeout(() => {
-                    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300);
-            };
-
-            const resetQuiz = () => {
-                setSubmitted(false);
-                setResult('');
-                setAnswers({
-                    q1: [],
-                    q2: '',
-                    q3: '',
-                    q4: '',
-                    q5: ''
-                });
-                // 滾動到問題區域
-                setTimeout(() => {
-                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            };
-
-            // 檢查是否回答完所有問題
-            const isAllAnswered = () => {
-                return (
-                    answers.q1.length > 0 &&
-                    answers.q2 !== '' &&
-                    answers.q3 !== '' &&
-                    answers.q4 !== '' &&
-                    answers.q5 !== ''
-                );
-            };
-
-            // 根據螢幕寬度決定問題選項的欄位數
-            const getColumnClass = () => {
-                if (windowWidth < 768) {
-                    return "grid-cols-1"; // 手機螢幕一欄
-                } else {
-                    return "grid-cols-2"; // 電腦螢幕兩欄
-                }
-            };
-
-            return (
-                <div className="quiz-container">
-                    <div className="quiz-header">
-                        <h1 className="text-3xl font-bold">台語動物教學小遊戲</h1>
-                        <p className="mt-2 opacity-90">觀看影片，回答問題，測試你的台語能力！</p>
-                    </div>
-                    
-                    <div className="p-5 md:p-8">
-                        <div className="mb-10">
-                            <div className="steps-title">步驟一：觀看影片</div>
-                            <div className="video-container">
-                                <div className="video-wrapper">
-                                    <iframe 
-                                        src="https://www.youtube.com/embed/StTvn9R6VME" 
-                                        title="台語動物教學影片"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowFullScreen
-                                    ></iframe>
-                                </div>
-                            </div>
-                            <button 
-                                onClick={handleWatchComplete} 
-                                className="btn-watch-complete"
-                            >
-                                👍 我已經看完影片了，開始答題！
-                            </button>
-                        </div>
-
-                        {videoWatched && (
-                            <div id="questions-section" className="mt-8 mb-6">
-                                <div className="steps-title">步驟二：回答問題</div>
-                                
-                                <div className="space-y-6">
-                                    {/* 問題 1: 多選題 */}
-                                    <div className="question-card p-5 md:p-6">
-                                        <h3 className="question-title block mb-4 font-bold text-lg pb-2">
-                                            1. {questions.q1.question}
-                                        </h3>
-                                        <div className={`grid ${getColumnClass()} gap-2 mt-4`}>
-                                            {questions.q1.options.map((option, index) => (
-                                                <div key={index} className="option-label flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`q1-${index}`}
-                                                        checked={answers.q1.includes(option)}
-                                                        onChange={() => handleCheckboxChange('q1', option)}
-                                                        disabled={submitted}
-                                                        className="mr-3 h-5 w-5"
-                                                    />
-                                                    <label htmlFor={`q1-${index}`} className="cursor-pointer flex-grow text-lg">
-                                                        {option}
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        {submitted && (
-                                            <p className={`mt-4 ${answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') ? 'correct-answer' : 'incorrect-answer'}`}>
-                                                {answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') 
-                                                    ? '✓ 正確！' 
-                                                    : `✗ 正確答案：${questions.q1.correctAnswer.join('、')}`}
-                                            </p>
-                                        )}
-                                    </div>
-                                    
-                                    {/* 問題 2-5: 單選題 */}
-                                    {['q2', 'q3', 'q4', 'q5'].map((qId, qIndex) => (
-                                        <div key={qId} className="question-card p-5 md:p-6">
-                                            <h3 className="question-title block mb-4 font-bold text-lg pb-2">
-                                                {qIndex + 2}. {questions[qId].question}
-                                            </h3>
-                                            <div className="grid grid-cols-1 gap-2 mt-4">
-                                                {questions[qId].options.map((option, index) => (
-                                                    <div key={index} className="option-label flex items-center">
-                                                        <input
-                                                            type="radio"
-                                                            id={`${qId}-${index}`}
-                                                            name={qId}
-                                                            checked={answers[qId] === option}
-                                                            onChange={() => handleRadioChange(qId, option)}
-                                                            disabled={submitted}
-                                                            className="mr-3 h-5 w-5"
-                                                        />
-                                                        <label htmlFor={`${qId}-${index}`} className="cursor-pointer flex-grow text-lg">
-                                                            {option}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {submitted && (
-                                                <p className={`mt-4 ${answers[qId] === questions[qId].correctAnswer ? 'correct-answer' : 'incorrect-answer'}`}>
-                                                    {answers[qId] === questions[qId].correctAnswer
-                                                        ? '✓ 正確！'
-                                                        : `✗ 正確答案：${questions[qId].correctAnswer}`}
-                                                </p>
-                                            )}
-                                        </div>
-                                    ))}
-                                    
-                                    <div id="result-section" className="mt-8">
-                                        {!submitted ? (
-                                            <button 
-                                                onClick={handleSubmit} 
-                                                disabled={!isAllAnswered()}
-                                                className={isAllAnswered() ? 'btn-submit' : 'btn-submit disabled'}
-                                            >
-                                                {isAllAnswered() ? '📝 提交答案' : '⚠️ 請回答所有問題'}
-                                            </button>
-                                        ) : (
-                                            <div className="result-card p-6 rounded-lg my-6">
-                                                <p className="text-xl font-bold text-center p-3 rounded text-orange-600">
-                                                    {result}
-                                                </p>
-                                                <button 
-                                                    onClick={resetQuiz}
-                                                    className="btn-retry mt-4"
-                                                >
-                                                    🔄 再試一次
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="quiz-footer">
-                        台語動物教學小遊戲 © 2025
-                    </div>
+<body>
+    <div class="header" id="header">
+        <h1>體智活動動畫產生器</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>📸 圖片管理</h3>
+                <div class="form-row">
+                    <input type="file" id="imageUpload" accept="image/*">
+                    <input type="text" id="imageText" placeholder="輸入圖片對應的文字">
                 </div>
-            );
-        };
+                <div class="form-row">
+                    <select id="layoutSelect">
+                        <option value="left">圖片在左，文字在右</option>
+                        <option value="right">圖片在右，文字在左</option>
+                    </select>
+                    <select id="matchType">
+                        <option value="correct">正確配對 ⭕</option>
+                        <option value="incorrect">錯誤配對 ❌</option>
+                    </select>
+                </div>
+                <button onclick="addItem()">➕ 新增項目</button>
+                
+                <div class="item-list" id="itemList"></div>
+            </div>
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<TaiwaneseAnimalQuiz />);
+            <div class="control-group">
+                <h3>⚙️ 動畫設定</h3>
+                <div class="form-row">
+                    <label>每張動畫停留時間：</label>
+                    <input type="number" id="duration" value="3" min="1" max="30">
+                    <span>秒</span>
+                </div>
+                <div class="form-row">
+                    <label>
+                        <input type="checkbox" id="showHints" checked> 
+                        顯示配對提示
+                    </label>
+                </div>
+                <div class="form-row">
+                    <label>播放順序：</label>
+                    <select id="playOrder">
+                        <option value="sequence">依序播放</option>
+                        <option value="random">隨機播放</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <button onclick="startAnimation()">🎬 開始動畫</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="animation-container">
+        <div class="animation-screen" id="animationScreen">
+            <div class="start-screen" id="startScreen">
+                <h2>🎯 體智活動遊戲</h2>
+                <p>📋 遊戲規則：</p>
+                <p>✅ 圖片與文字配對正確 → 雙手比圈圈 ⭕</p>
+                <p>❌ 圖片與文字配對錯誤 → 雙手比叉叉 ❌</p>
+                <button class="start-btn" onclick="startSlideshow()">🚀 開始遊戲</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let items = [];
+        let currentSlide = 0;
+        let animationInterval = null;
+        let isAnimating = false;
+        let isPaused = false;
+        let playQueue = []; // 播放佇列
+
+        // 打亂陣列的函數
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        // 生成播放佇列
+        function generatePlayQueue() {
+            const playOrder = document.getElementById('playOrder').value;
+            
+            if (playOrder === 'random') {
+                playQueue = shuffleArray(items);
+            } else {
+                playQueue = [...items]; // 依序播放
+            }
+        }
+
+        // 本地存儲功能
+        function saveData() {
+            const data = {
+                items: items,
+                duration: document.getElementById('duration').value,
+                showHints: document.getElementById('showHints').checked,
+                playOrder: document.getElementById('playOrder').value
+            };
+            localStorage.setItem('brainBodyActivity', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('brainBodyActivity');
+            if (saved) {
+                const data = JSON.parse(saved);
+                items = data.items || [];
+                document.getElementById('duration').value = data.duration || 3;
+                document.getElementById('showHints').checked = data.showHints !== false;
+                document.getElementById('playOrder').value = data.playOrder || 'sequence';
+                updateItemList();
+            }
+        }
+
+        function addItem() {
+            const imageInput = document.getElementById('imageUpload');
+            const textInput = document.getElementById('imageText');
+            const layoutSelect = document.getElementById('layoutSelect');
+            const matchTypeSelect = document.getElementById('matchType');
+
+            if (!imageInput.files[0] || !textInput.value.trim()) {
+                alert('請選擇圖片並輸入文字！');
+                return;
+            }
+
+            const file = imageInput.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                const item = {
+                    id: Date.now(),
+                    image: e.target.result,
+                    text: textInput.value.trim(),
+                    layout: layoutSelect.value,
+                    matchType: matchTypeSelect.value
+                };
+                
+                items.push(item);
+                updateItemList();
+                saveData(); // 保存數據
+                
+                // 清空輸入
+                imageInput.value = '';
+                textInput.value = '';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        function removeItem(id) {
+            items = items.filter(item => item.id !== id);
+            updateItemList();
+            saveData(); // 保存數據
+        }
+
+        function updateItemList() {
+            const itemList = document.getElementById('itemList');
+            itemList.innerHTML = items.map(item => `
+                <div class="item">
+                    <img src="${item.image}" alt="圖片">
+                    <span>${item.text} (${item.layout === 'left' ? '圖左文右' : '圖右文左'}) ${item.matchType === 'correct' ? '⭕' : '❌'}</span>
+                    <button class="remove-btn" onclick="removeItem(${item.id})">刪除</button>
+                </div>
+            `).join('');
+        }
+
+        function startAnimation() {
+            if (items.length === 0) {
+                alert('請先新增至少一個項目！');
+                return;
+            }
+
+            // 重置狀態
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+            
+            isAnimating = false;
+            isPaused = false;
+            currentSlide = 0;
+            playQueue = []; // 清空播放佇列
+
+            // 顯示動畫容器（全螢幕覆蓋）
+            const animationContainer = document.querySelector('.animation-container');
+            animationContainer.style.display = 'flex';
+            document.getElementById('animationScreen').style.display = 'block';
+            
+            // 確保開始螢幕顯示
+            const startScreen = document.getElementById('startScreen');
+            if (startScreen) {
+                startScreen.style.display = 'flex';
+            }
+        }
+
+        function startSlideshow() {
+            const startScreen = document.getElementById('startScreen');
+            if (startScreen) {
+                startScreen.style.display = 'none';
+            }
+            
+            // 檢查是否有項目可以播放
+            if (!items || items.length === 0) {
+                alert('沒有可播放的項目！請先新增內容。');
+                stopAnimation();
+                return;
+            }
+            
+            // 生成播放佇列
+            generatePlayQueue();
+            
+            isAnimating = true;
+            isPaused = false;
+            currentSlide = 0;
+            
+            // 清除可能存在的舊計時器
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+            
+            showSlide();
+            
+            const duration = parseInt(document.getElementById('duration').value) * 1000;
+            animationInterval = setInterval(() => {
+                if (!isPaused && playQueue && playQueue.length > 0) {
+                    currentSlide = (currentSlide + 1) % playQueue.length;
+                    showSlide();
+                }
+            }, duration);
+        }
+
+        function pauseAnimation() {
+            isPaused = true;
+            document.getElementById('animationScreen').classList.add('paused');
+        }
+
+        function resumeAnimation() {
+            isPaused = false;
+            document.getElementById('animationScreen').classList.remove('paused');
+        }
+
+        function togglePause() {
+            if (isPaused) {
+                resumeAnimation();
+            } else {
+                pauseAnimation();
+            }
+        }
+
+        function showSlide() {
+            const screen = document.getElementById('animationScreen');
+            if (!screen || !playQueue[currentSlide]) {
+                console.error('動畫螢幕或項目不存在');
+                return;
+            }
+            
+            const item = playQueue[currentSlide]; // 使用播放佇列中的項目
+            const showHintsElement = document.getElementById('showHints');
+            const showHints = showHintsElement ? showHintsElement.checked : true;
+            
+            const gestureText = item.matchType === 'correct' ? '圖文配對正確！雙手比圈圈 ⭕' : '圖文配對錯誤！雙手比叉叉 ❌';
+            const gestureIcon = item.matchType === 'correct' ? '⭕' : '❌';
+            const gestureClass = item.matchType === 'correct' ? 'correct' : 'incorrect';
+            
+            try {
+                const slideHTML = `
+                    <div class="animation-controls">
+                        <button class="control-btn" onclick="togglePause()">⏯️ ${isPaused ? '繼續' : '暫停'}</button>
+                        <button class="control-btn" onclick="stopAnimation()">⏹️ 結束</button>
+                    </div>
+                    <div class="slide active">
+                        <div class="content-container">
+                            <div class="${item.layout === 'left' ? 'image-section' : 'text-section'}">
+                                ${item.layout === 'left' ? 
+                                    `<img src="${item.image}" alt="圖片" class="slide-image">` : 
+                                    `<div class="slide-text">${item.text}</div>`
+                                }
+                            </div>
+                            <div class="${item.layout === 'left' ? 'text-section' : 'image-section'}">
+                                ${item.layout === 'left' ? 
+                                    `<div class="slide-text">${item.text}</div>` : 
+                                    `<img src="${item.image}" alt="圖片" class="slide-image">`
+                                }
+                            </div>
+                        </div>
+                        ${showHints ? `
+                            <div class="gesture-icons">
+                                <div class="gesture-icon ${gestureClass}">
+                                    ${gestureIcon}
+                                </div>
+                            </div>
+                            <div class="gesture-instruction">
+                                ${gestureText}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                screen.innerHTML = slideHTML;
+            } catch (error) {
+                console.error('顯示幻燈片時發生錯誤:', error);
+            }
+        }
+
+        function stopAnimation() {
+            if (animationInterval) {
+                clearInterval(animationInterval);
+                animationInterval = null;
+            }
+            
+            // 隱藏動畫容器
+            const animationContainer = document.querySelector('.animation-container');
+            animationContainer.style.display = 'none';
+            document.getElementById('animationScreen').style.display = 'none';
+            document.getElementById('animationScreen').classList.remove('paused');
+            
+            // 清空動畫螢幕內容，避免殘留
+            document.getElementById('animationScreen').innerHTML = `
+                <div class="start-screen" id="startScreen">
+                    <h2>體智活動遊戲</h2>
+                    <p>📋 遊戲規則：</p>
+                    <p>圖片與文字配對正確 → 雙手比圈圈 ⭕</p>
+                    <p>圖片與文字配對錯誤 → 雙手比叉叉 ❌</p>
+                    <button class="start-btn" onclick="startSlideshow()">🚀 開始遊戲</button>
+                </div>
+            `;
+            
+            isAnimating = false;
+            isPaused = false;
+            currentSlide = 0;
+        }
+
+        // 鍵盤快捷鍵
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && isAnimating) {
+                stopAnimation();
+            }
+            if (e.key === ' ' && isAnimating) {
+                e.preventDefault();
+                togglePause();
+            }
+        });
+
+        // 保存設定當值改變時
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData(); // 載入保存的數據
+        });
+        
+        // 頁面載入完成後綁定事件
+        window.addEventListener('load', function() {
+            const durationInput = document.getElementById('duration');
+            const showHintsInput = document.getElementById('showHints');
+            const playOrderInput = document.getElementById('playOrder');
+            
+            if (durationInput) {
+                durationInput.addEventListener('change', saveData);
+            }
+            if (showHintsInput) {
+                showHintsInput.addEventListener('change', saveData);
+            }
+            if (playOrderInput) {
+                playOrderInput.addEventListener('change', saveData);
+            }
+        });
     </script>
 </body>
 </html>
