@@ -3,539 +3,899 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>台語動物教學小遊戲</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.21.2/babel.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>愛迪樂ICOPE長者功能評估 (114年版)</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- html2canvas for Image Download -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        
         body {
             font-family: 'Noto Sans TC', sans-serif;
-            background-color: #fff5f0;
-            background-image: linear-gradient(135deg, #fff9f5 0%, #fff2eb 100%);
-            background-attachment: fixed;
-            margin: 0;
-            padding: 0;
-            color: #33303a;
         }
-        .quiz-container {
-            max-width: 1000px;
-            margin: 20px auto;
-            box-shadow: 0 10px 30px rgba(255, 150, 100, 0.15);
-            border-radius: 20px;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 178, 142, 0.3);
-        }
-        .quiz-header {
-            background: linear-gradient(90deg, #FF9664, #FFB28E);
-            color: white;
-            padding: 1.8rem;
-            text-align: center;
-            position: relative;
-            box-shadow: 0 4px 15px -5px rgba(255, 150, 100, 0.4);
-        }
-        .quiz-header h1 {
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-        }
-        .quiz-header::after {
-            content: "";
-            position: absolute;
-            bottom: -15px;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            width: 0;
-            height: 0;
-            border-left: 20px solid transparent;
-            border-right: 20px solid transparent;
-            border-top: 20px solid #FFB28E;
-        }
-        .question-card {
-            border-radius: 16px;
-            box-shadow: 0 4px 6px rgba(255, 150, 100, 0.08);
-            border: 1px solid rgba(255, 178, 142, 0.2);
-            transition: all 0.3s;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
-        }
-        .question-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 15px rgba(255, 150, 100, 0.12);
-        }
-        .question-title {
-            color: #FF7F50;
-            border-bottom: 2px solid rgba(255, 150, 100, 0.2);
-        }
-        .option-label {
-            transition: all 0.2s;
-            border-radius: 12px;
-            padding: 0.7rem 1.2rem;
-            margin: 0.3rem 0;
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(255, 178, 142, 0.15);
-        }
-        .option-label:hover {
-            background: rgba(255, 235, 225, 0.7);
-            border: 1px solid rgba(255, 178, 142, 0.3);
-        }
-        .btn-watch-complete {
-            background: linear-gradient(90deg, #FF5C3F, #FF7F50);
-            color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 92, 63, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
-            margin-top: 20px;
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-        .btn-watch-complete:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 92, 63, 0.4);
-            background: linear-gradient(90deg, #FF4D2E, #FF7043);
-        }
-        .btn-watch-complete:active {
-            transform: translateY(1px);
-        }
-        .btn-submit {
-            background: linear-gradient(90deg, #FF7F50, #FFAB76);
-            color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 127, 80, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-        .btn-submit:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 127, 80, 0.4);
-            background: linear-gradient(90deg, #FF7043, #FFA369);
-        }
-        .btn-submit:disabled {
-            background: linear-gradient(90deg, #FFD4C2, #FFE6DB);
-            color: #CC9E8A;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .btn-retry {
-            background: linear-gradient(90deg, #FF9D7D, #FFC4B0);
-            color: white;
-            transition: all 0.3s;
-            transform: translateY(0);
-            box-shadow: 0 6px 12px rgba(255, 157, 125, 0.3);
-            font-size: 1.1rem;
-            padding: 1rem 1.5rem;
-            border-radius: 100px;
-            text-align: center;
-            font-weight: bold;
-            display: block;
-            width: 100%;
-            cursor: pointer;
-            border: none;
-            outline: none;
-        }
-        .btn-retry:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(255, 157, 125, 0.4);
-            background: linear-gradient(90deg, #FF8E6E, #FFB5A1);
-        }
-        .video-container {
-            position: relative;
-            width: 100%;
-            overflow: hidden;
-            border-radius: 16px;
-            box-shadow: 0 8px 20px rgba(255, 150, 100, 0.15);
-            border: 3px solid rgba(255, 178, 142, 0.3);
-        }
-        .video-wrapper {
-            position: relative;
-            padding-top: 56.25%; /* 16:9 比例 */
-            height: 0;
-            overflow: hidden;
-        }
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-        .result-card {
-            background: linear-gradient(145deg, rgba(255, 242, 235, 0.8), rgba(255, 235, 225, 0.8));
-            border-left: 5px solid #FF9664;
-            border-radius: 12px;
-        }
-        input[type="checkbox"], input[type="radio"] {
-            transform: scale(1.3);
-            margin-right: 12px;
-            accent-color: #FF7F50;
-        }
-        .correct-answer {
-            color: #FF7F50;
-            font-weight: 600;
-            background: rgba(255, 235, 225, 0.7);
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        .incorrect-answer {
-            color: #FF5C3F;
-            font-weight: 600;
-            background: rgba(255, 235, 225, 0.7);
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        .quiz-footer {
-            font-size: 0.8rem;
-            color: #FF9D7D;
-            text-align: center;
-            padding: 1rem;
-            background-color: rgba(255, 242, 235, 0.5);
-            border-top: 1px solid rgba(255, 178, 142, 0.2);
-        }
-        .steps-title {
-            color: #FF7F50;
-            font-weight: bold;
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            background: rgba(255, 235, 225, 0.5);
-            border-radius: 100px;
-            border: 2px solid rgba(255, 178, 142, 0.2);
-        }
-        @media (max-width: 640px) {
-            .quiz-container {
-                width: 95%;
-                margin: 10px auto;
-                border-radius: 16px;
+
+        /* Print Specific Styles - Force High Contrast */
+        @media print {
+            @page {
+                size: A4;
+                margin: 0.5cm;
             }
-            .quiz-header {
-                padding: 1.2rem;
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
-            .quiz-header h1 {
-                font-size: 1.5rem;
+            .no-print, header button, footer, .download-btn-group, .step-indicator {
+                display: none !important;
             }
-            .option-label {
-                padding: 0.6rem 1rem;
+            .shadow-lg, .shadow-md {
+                box-shadow: none !important;
+                border: 1px solid #000 !important;
             }
-            .btn-watch-complete, .btn-submit, .btn-retry {
-                font-size: 1rem;
-                padding: 0.8rem 1.2rem;
+            .animate-fade-in {
+                animation: none !important;
             }
+            /* Force text color for print */
+            .text-gray-500, .text-gray-600, .text-gray-700, .text-gray-800, .text-gray-900,
+            .text-teal-700, .text-teal-800, .text-purple-700, .text-purple-800,
+            .text-blue-700, .text-blue-800, .text-orange-700, .text-orange-800,
+            .text-yellow-700, .text-yellow-800, .text-pink-800, .text-red-700, .text-green-700 {
+                color: #000000 !important;
+            }
+            .bg-gray-50, .bg-gray-100, .bg-yellow-50, .bg-purple-100, .bg-blue-100, .bg-orange-100, .bg-teal-100, .bg-pink-100 {
+                background-color: #ffffff !important;
+                border: 1px solid #000 !important;
+            }
+            .border-l-4 {
+                border-left-color: #000 !important;
+            }
+            .report-container {
+                padding: 0 !important;
+            }
+            a {
+                text-decoration: none;
+                color: black !important;
+            }
+            /* Ensure links are printed */
+            a[href]:after {
+                content: " (" attr(href) ")";
+                font-size: 0.8em;
+                color: #333;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
-<body class="py-4 px-2">
+<body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect } = React;
+        const { useState, useEffect, useRef } = React;
 
-        const TaiwaneseAnimalQuiz = () => {
-            const [videoWatched, setVideoWatched] = useState(false);
-            const [answers, setAnswers] = useState({
-                q1: [],
-                q2: '',
-                q3: '',
-                q4: '',
-                q5: ''
+        // --- Icons (Inline SVG) ---
+        const IconBase = ({ children, className, ...props }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} {...props}>{children}</svg>
+        );
+        const Brain = (props) => (<IconBase {...props}><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 4.44-4A2.5 2.5 0 0 1 9.5 2Z" /><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-4.44-4A2.5 2.5 0 0 0 14.5 2Z" /></IconBase>);
+        const Activity = (props) => (<IconBase {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></IconBase>);
+        const Eye = (props) => (<IconBase {...props}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></IconBase>);
+        const Ear = (props) => (<IconBase {...props}><path d="M6 8.5a6.5 6.5 0 1 1 13 0c0 6-6 6-6 10a6 6 0 1 1-12 0" /><path d="M15 17v1a2 2 0 1 1-4 0v-1" /></IconBase>);
+        const Utensils = (props) => (<IconBase {...props}><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" /><path d="M7 2v20" /><path d="M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" /></IconBase>);
+        const Smile = (props) => (<IconBase {...props}><circle cx="12" cy="12" r="10" /><path d="M8 14s1.5 2 4 2 4-2 4-2" /><line x1="9" y1="9" x2="9.01" y2="9" /><line x1="15" y1="9" x2="15.01" y2="9" /></IconBase>);
+        const ClipboardCheck = (props) => (<IconBase {...props}><rect width="8" height="4" x="8" y="2" rx="1" ry="1" /><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" /><path d="m9 14 2 2 4-4" /></IconBase>);
+        const Printer = (props) => (<IconBase {...props}><polyline points="6 9 6 2 18 2 18 9" /><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" /><rect width="12" height="8" x="6" y="14" /></IconBase>);
+        const ChevronRight = (props) => (<IconBase {...props}><path d="m9 18 6-6-6-6" /></IconBase>);
+        const ChevronLeft = (props) => (<IconBase {...props}><path d="m15 18-6-6 6-6" /></IconBase>);
+        const MapPin = (props) => (<IconBase {...props}><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" /><circle cx="12" cy="10" r="3" /></IconBase>);
+        const HeartHandshake = (props) => (<IconBase {...props}><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" /><path d="M12 5 9.04 7.96a2.17 2.17 0 0 0 0 3.08v0c.82.82 2.13.85 3 .07l2.07-1.9a2.82 2.82 0 0 1 3.18 0l2.5 2.25c.41.37.58.9.44 1.41l-1 3.75c-.14.53-.55.95-1.07 1.09l-3.25.85a3 3 0 0 1-3.6-1.5l-3-6.5" /></IconBase>);
+        const Download = (props) => (<IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" /></IconBase>);
+        const ChartPie = (props) => (<IconBase {...props}><path d="M21.21 15.89A10 10 0 1 1 8 2.83" /><path d="M22 12A10 10 0 0 0 12 2v10z" /></IconBase>);
+        const Pill = (props) => (<IconBase {...props}><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></IconBase>);
+        const Users = (props) => (<IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></IconBase>);
+        const Video = (props) => (<IconBase {...props}><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2" ry="2"/></IconBase>);
+
+
+        // --- Education Resources (衛教影片/文章) ---
+        const EDUCATION_RESOURCES = {
+            cognition: [
+                { title: "失智症預防篇 (影片)", url: "https://health99.hpa.gov.tw/material/6594", type: "video" },
+                { title: "失智友善的一天 (影片)", url: "https://health99.hpa.gov.tw/material/6598", type: "video" },
+                { title: "預防失智的好食物 (影片)", url: "https://health99.hpa.gov.tw/material/6600", type: "video" },
+                { title: "失智長者-日常照顧的撇步", url: "https://health99.hpa.gov.tw/material/6606", type: "article" }
+            ],
+            mobility: [
+                { title: "減緩衰弱 居家333運動 (影片)", url: "https://health99.hpa.gov.tw/material/6608", type: "video" },
+                { title: "長者活力體能訓練 B級(衰弱者)", url: "https://health99.hpa.gov.tw/material/6620", type: "video" },
+                { title: "居家防跌注意事項", url: "https://health99.hpa.gov.tw/material/6616", type: "article" },
+                { title: "長者防跌妙招手冊", url: "https://health99.hpa.gov.tw/material/3282", type: "article" }
+            ],
+            nutrition: [
+                { title: "牙口不好也能吃得好 (影片)", url: "https://health99.hpa.gov.tw/material/6625", type: "video" },
+                { title: "銀髮族的健康均衡飲食 (影片)", url: "https://health99.hpa.gov.tw/material/6628", type: "video" },
+                { title: "3招讓你吞嚥順暢不卡卡 (影片)", url: "https://health99.hpa.gov.tw/material/6631", type: "video" },
+                { title: "銀髮族飲食-三好一巧", url: "https://health99.hpa.gov.tw/material/6634", type: "article" }
+            ],
+            vision: [
+                { title: "護眼你我，世界才美 (影片)", url: "https://health99.hpa.gov.tw/material/6637", type: "video" },
+                { title: "白內障初期症狀你注意哪些? (影片)", url: "https://health99.hpa.gov.tw/material/6638", type: "video" },
+                { title: "高齡友善的居家環境-顏色的使用", url: "https://health99.hpa.gov.tw/material/6639", type: "article" }
+            ],
+            hearing: [
+                { title: "老年聽力退化，耐心對待助溝通 (影片)", url: "https://health99.hpa.gov.tw/material/6642", type: "video" },
+                { title: "聽覺復能 (華科基金會)", url: "https://www.psa.org.tw/hearing-rehabilitation/", type: "article" }
+            ],
+            depression: [
+                { title: "認識老年憂鬱症 (影片)", url: "https://health99.hpa.gov.tw/material/6644", type: "video" },
+                { title: "陽光下的憂鬱老小孩 (影片)", url: "https://health99.hpa.gov.tw/material/6645", type: "video" },
+                { title: "老年憂鬱症衛教單張", url: "https://health99.hpa.gov.tw/material/6646", type: "article" }
+            ]
+        };
+
+        // --- Resources Data (Location) ---
+        const TAISHAN_RESOURCES = {
+          cognition: [
+            { name: "輔大醫院 神經內科/精神科", address: "新北市泰山區貴子路69號", phone: "(02) 8512-8888", type: "醫療" },
+            { name: "恆友精神科診所", address: "新北市新莊區幸福路560號", phone: "(02) 2990-7909", type: "醫療" },
+            { name: "瑞慶社區發展協會", address: "新北市泰山區永安北路500號2樓", phone: "(03) 302-0177", type: "社區據點/非醫療" },
+            { name: "愛迪樂日間照顧中心", address: "新北市林口區文化一路一段190巷6-2號", phone: "(02) 2601-3638", type: "長照資源/非醫療" }
+          ],
+          mobility: [
+            { name: "衛生福利部樂生療養院", address: "桃園市龜山區萬壽路一段50巷2號", phone: "(02) 8200-6600", type: "醫療" },
+            { name: "倍嘉骨科診所", address: "新北市泰山區泰林路二段204號", phone: "(02) 2909-6530", type: "醫療" },
+            { name: "辭修公園", address: "新北市泰山區辭修路", phone: "-", type: "公園/非醫療" },
+            { name: "泰山國民運動中心", address: "新北市泰山區全興路167號", phone: "(02) 2296-8860", type: "運動中心/非醫療" },
+            { name: "愛迪樂健康促進團隊", address: "新北市林口區四維路201號", phone: "(02) 2601-3638", type: "運動訓練/非醫療" }
+          ],
+          nutrition: [
+            { name: "輔大醫院 營養諮詢門診", address: "新北市泰山區貴子路69號", phone: "(02) 8512-8888", type: "醫療" },
+            { name: "楓樹里/福興里 共餐據點", address: "依泰山區公所公告地點", phone: "-", type: "社區共餐/非醫療" },
+            { name: "泰山區衛生所", address: "新北市泰山區全興路212號3樓", phone: "(02) 2909-9921", type: "社區資源/非醫療" }
+          ],
+          vision: [
+            { name: "普生眼科診所", address: "新北市泰山區明志路1段188號1樓", phone: "(02) 2297-3823", type: "醫療" },
+            { name: "輔大醫院 眼科", address: "新北市泰山區貴子路69號", phone: "(02) 8512-8888", type: "醫療" },
+            { name: "新北市輔具資源中心", address: "新北市蘆洲區集賢路245號9樓", phone: "(02) 8286-7045", type: "輔具資源/非醫療" }
+          ],
+          hearing: [
+            { name: "華科慈善基金會", address: "新北市新店區北新路三段207號", phone: "(02) 8911-1311", type: "非醫療/聽力衛教" },
+            { name: "温法烈耳鼻喉科診所", address: "新北市泰山區泰林路2段175號", phone: "(02) 2909-8253", type: "醫療" },
+            { name: "科林助聽器 (泰山門市)", address: "新北市泰山區明志路一段197號", phone: "(02) 2900-9868", type: "輔具資源/非醫療" }
+          ],
+          depression: [
+            { name: "新北市社區心理衛生中心 (林口分站)", address: "新北市林口區忠孝二路55號2樓", phone: "(02) 2600-6602", type: "非醫療/心理諮商" },
+            { name: "誠心身心醫學診所", address: "新北市新莊區中原路277號", phone: "(02) 8522-8070", type: "醫療" },
+            { name: "新北市立圖書館泰山分館", address: "新北市泰山區全興路212號5樓", phone: "(02) 2909-1727", type: "圖書館/非醫療" }
+          ],
+          social: [
+             { name: "泰山區公所 (社會人文課)", address: "新北市泰山區明志路一段322號", phone: "(02) 2909-9551", type: "社福/長照" },
+             { name: "新北市長期照顧管理中心", address: "新北市板橋區英士路192-1號", phone: "(02) 2257-7155", type: "長照評估" }
+          ]
+        };
+
+        // --- Questionnaires ---
+        const AD8_QUESTIONS = [
+          "判斷力上的困難 (例如：落入圈套或騙局、財務上不好的決定)",
+          "對活動和嗜好的興趣降低",
+          "重複相同問題、故事和陳述",
+          "在學習如何使用工具、設備和小器具上有困難",
+          "忘記正確的月份和年份",
+          "處理複雜的財務上有困難 (例如：個人或家庭的收支平衡)",
+          "記住約會的時間有困難",
+          "有持續的思考和記憶方面的問題"
+        ];
+
+        const MNA_SF_QUESTIONS = [
+          { q: "A. 過去三個月內是否因食慾不振、消化問題、咀嚼或吞嚥困難而減少食量？", options: [{score: 0, text: "食量嚴重減少"}, {score: 1, text: "食量中度減少"}, {score: 2, text: "食量沒有改變"}] },
+          { q: "B. 過去三個月內體重下降的情況？", options: [{score: 0, text: "體重下降>3公斤"}, {score: 1, text: "不知道"}, {score: 2, text: "體重下降1-3公斤"}, {score: 3, text: "體重沒有下降"}] },
+          { q: "C. 活動能力？", options: [{score: 0, text: "需長期臥床或坐輪椅"}, {score: 1, text: "可下床但不能外出"}, {score: 2, text: "可以外出"}] },
+          { q: "D. 過去三個月內有沒有受到心理創傷或患上急性疾病？", options: [{score: 0, text: "有"}, {score: 2, text: "無"}] },
+          { q: "E. 精神心理問題？", options: [{score: 0, text: "嚴重失智或憂鬱"}, {score: 1, text: "輕度失智"}, {score: 2, text: "無精神心理問題"}] },
+          { q: "F. 身體質量指數 (BMI)？", options: [{score: 0, text: "BMI < 19"}, {score: 1, text: "19 <= BMI < 21"}, {score: 2, text: "21 <= BMI < 23"}, {score: 3, text: "BMI >= 23"}] }
+        ];
+
+        const GDS_15_QUESTIONS = [
+          "1. 您對生活滿意嗎？ (否=1)",
+          "2. 您是否放棄了很多活動和興趣？ (是=1)",
+          "3. 您是否覺得生活空虛？ (是=1)",
+          "4. 您是否常感到厭煩？ (是=1)",
+          "5. 您是否大部分時間精神都很好？ (否=1)",
+          "6. 您是否害怕將有不幸的事發生在您身上？ (是=1)",
+          "7. 您是否大部分時間感到快樂？ (否=1)",
+          "8. 您是否常感到無助？ (是=1)",
+          "9. 您是否寧願留在家裡，而不願出門做新事物？ (是=1)",
+          "10. 您是否覺得記憶力比大多數人差？ (是=1)",
+          "11. 您是否覺得現在活著很美好？ (否=1)",
+          "12. 您是否覺得自己現在很沒用？ (是=1)",
+          "13. 您是否覺得精力充滿？ (否=1)",
+          "14. 您是否覺得現況沒有希望？ (是=1)",
+          "15. 您是否覺得大多數人都比您好？ (是=1)"
+        ];
+
+        // --- Visual Radar Chart Component (High Contrast) ---
+        const RadarChart = ({ status }) => {
+            const width = 300;
+            const height = 300;
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = 100;
+            const levels = 4;
+            
+            const keys = ['cognition', 'mobility', 'nutrition', 'vision', 'hearing', 'depression'];
+            const labels = ['認知', '行動', '營養', '視力', '聽力', '憂鬱'];
+            
+            // 1 for Normal, 0.4 for Abnormal
+            const dataValues = keys.map(k => status[k] ? 0.4 : 1);
+            
+            const angleSlice = (Math.PI * 2) / 6;
+
+            const points = dataValues.map((val, i) => {
+                const x = centerX + radius * val * Math.cos(angleSlice * i - Math.PI / 2);
+                const y = centerY + radius * val * Math.sin(angleSlice * i - Math.PI / 2);
+                return `${x},${y}`;
+            }).join(' ');
+
+            const fullPoints = Array(6).fill(1).map((val, i) => {
+                 const x = centerX + radius * Math.cos(angleSlice * i - Math.PI / 2);
+                 const y = centerY + radius * Math.sin(angleSlice * i - Math.PI / 2);
+                 return {x, y, label: labels[i]};
             });
-            const [submitted, setSubmitted] = useState(false);
-            const [result, setResult] = useState('');
-            const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-            // 監聽視窗大小變化
-            useEffect(() => {
-                const handleResize = () => {
-                    setWindowWidth(window.innerWidth);
-                };
-
-                window.addEventListener('resize', handleResize);
-                return () => {
-                    window.removeEventListener('resize', handleResize);
-                };
-            }, []);
-
-            // 問題及選項
-            const questions = {
-                q1: {
-                    question: '請問剛剛有哪些動物的台語教學？（可複選）',
-                    options: ['斑馬', '麒麟', '長頸鹿', '猴子', '企鵝', '獅子', '老虎'],
-                    type: 'checkbox',
-                    correctAnswer: ['長頸鹿', '斑馬', '企鵝']
-                },
-                q2: {
-                    question: '最先教的動物是？',
-                    options: ['企鵝', '長頸鹿', '斑馬', '獅子'],
-                    type: 'radio',
-                    correctAnswer: '斑馬'
-                },
-                q3: {
-                    question: '誇讚人深藏不漏的台語怎麼說？',
-                    options: ['深藏不露', '大隻雞慢啼', '烏矸仔貯豆油', '金玉其外', '有錢開無路'],
-                    type: 'radio',
-                    correctAnswer: '烏矸仔貯豆油'
-                },
-                q4: {
-                    question: '豬哥亮哪個動物的字不會寫？',
-                    options: ['企鵝', '馬來貘', '斑馬', '麒麟', '長頸鹿'],
-                    type: 'radio',
-                    correctAnswer: '麒麟'
-                },
-                q5: {
-                    question: '三重大學是什麼意思呢？',
-                    options: ['三重的一所社區大學', '很會念書', '沒有讀書的意思', '有很多學問'],
-                    type: 'radio',
-                    correctAnswer: '沒有讀書的意思'
-                }
-            };
-
-            const handleWatchComplete = () => {
-                setVideoWatched(true);
-                setTimeout(() => {
-                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            };
-
-            const handleCheckboxChange = (questionId, option) => {
-                setAnswers(prev => {
-                    const newAnswers = { ...prev };
-                    if (newAnswers[questionId].includes(option)) {
-                        newAnswers[questionId] = newAnswers[questionId].filter(item => item !== option);
-                    } else {
-                        newAnswers[questionId] = [...newAnswers[questionId], option];
-                    }
-                    return newAnswers;
-                });
-            };
-
-            const handleRadioChange = (questionId, option) => {
-                setAnswers(prev => ({
-                    ...prev,
-                    [questionId]: option
-                }));
-            };
-
-            const handleSubmit = () => {
-                setSubmitted(true);
-                
-                // Check answers
-                let correct = 0;
-                
-                // 檢查多選題 (q1)
-                const q1Answer = answers.q1.sort().join(',');
-                const q1Correct = questions.q1.correctAnswer.sort().join(',');
-                if (q1Answer === q1Correct) correct++;
-                
-                // 檢查單選題 (q2-q5)
-                ['q2', 'q3', 'q4', 'q5'].forEach(key => {
-                    if (answers[key] === questions[key].correctAnswer) correct++;
-                });
-                
-                if (correct === 5) {
-                    setResult('恭喜你全部答對！成功過關！ 🎉');
-                } else {
-                    setResult(`你答對了 ${correct}/5 題，再試一次吧！ 💪`);
-                }
-
-                // 滾動到結果區域
-                setTimeout(() => {
-                    document.getElementById('result-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300);
-            };
-
-            const resetQuiz = () => {
-                setSubmitted(false);
-                setResult('');
-                setAnswers({
-                    q1: [],
-                    q2: '',
-                    q3: '',
-                    q4: '',
-                    q5: ''
-                });
-                // 滾動到問題區域
-                setTimeout(() => {
-                    document.getElementById('questions-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-            };
-
-            // 檢查是否回答完所有問題
-            const isAllAnswered = () => {
-                return (
-                    answers.q1.length > 0 &&
-                    answers.q2 !== '' &&
-                    answers.q3 !== '' &&
-                    answers.q4 !== '' &&
-                    answers.q5 !== ''
-                );
-            };
-
-            // 根據螢幕寬度決定問題選項的欄位數
-            const getColumnClass = () => {
-                if (windowWidth < 768) {
-                    return "grid-cols-1"; // 手機螢幕一欄
-                } else {
-                    return "grid-cols-2"; // 電腦螢幕兩欄
-                }
-            };
 
             return (
-                <div className="quiz-container">
-                    <div className="quiz-header">
-                        <h1 className="text-3xl font-bold">台語動物教學小遊戲</h1>
-                        <p className="mt-2 opacity-90">觀看影片，回答問題，測試你的台語能力！</p>
-                    </div>
-                    
-                    <div className="p-5 md:p-8">
-                        <div className="mb-10">
-                            <div className="steps-title">步驟一：觀看影片</div>
-                            <div className="video-container">
-                                <div className="video-wrapper">
-                                    <iframe 
-                                        src="https://www.youtube.com/embed/StTvn9R6VME" 
-                                        title="台語動物教學影片"
-                                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                                        allowFullScreen
-                                    ></iframe>
-                                </div>
-                            </div>
-                            <button 
-                                onClick={handleWatchComplete} 
-                                className="btn-watch-complete"
-                            >
-                                👍 我已經看完影片了，開始答題！
-                            </button>
-                        </div>
-
-                        {videoWatched && (
-                            <div id="questions-section" className="mt-8 mb-6">
-                                <div className="steps-title">步驟二：回答問題</div>
-                                
-                                <div className="space-y-6">
-                                    {/* 問題 1: 多選題 */}
-                                    <div className="question-card p-5 md:p-6">
-                                        <h3 className="question-title block mb-4 font-bold text-lg pb-2">
-                                            1. {questions.q1.question}
-                                        </h3>
-                                        <div className={`grid ${getColumnClass()} gap-2 mt-4`}>
-                                            {questions.q1.options.map((option, index) => (
-                                                <div key={index} className="option-label flex items-center">
-                                                    <input
-                                                        type="checkbox"
-                                                        id={`q1-${index}`}
-                                                        checked={answers.q1.includes(option)}
-                                                        onChange={() => handleCheckboxChange('q1', option)}
-                                                        disabled={submitted}
-                                                        className="mr-3 h-5 w-5"
-                                                    />
-                                                    <label htmlFor={`q1-${index}`} className="cursor-pointer flex-grow text-lg">
-                                                        {option}
-                                                    </label>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        {submitted && (
-                                            <p className={`mt-4 ${answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') ? 'correct-answer' : 'incorrect-answer'}`}>
-                                                {answers.q1.sort().join(',') === questions.q1.correctAnswer.sort().join(',') 
-                                                    ? '✓ 正確！' 
-                                                    : `✗ 正確答案：${questions.q1.correctAnswer.join('、')}`}
-                                            </p>
-                                        )}
-                                    </div>
-                                    
-                                    {/* 問題 2-5: 單選題 */}
-                                    {['q2', 'q3', 'q4', 'q5'].map((qId, qIndex) => (
-                                        <div key={qId} className="question-card p-5 md:p-6">
-                                            <h3 className="question-title block mb-4 font-bold text-lg pb-2">
-                                                {qIndex + 2}. {questions[qId].question}
-                                            </h3>
-                                            <div className="grid grid-cols-1 gap-2 mt-4">
-                                                {questions[qId].options.map((option, index) => (
-                                                    <div key={index} className="option-label flex items-center">
-                                                        <input
-                                                            type="radio"
-                                                            id={`${qId}-${index}`}
-                                                            name={qId}
-                                                            checked={answers[qId] === option}
-                                                            onChange={() => handleRadioChange(qId, option)}
-                                                            disabled={submitted}
-                                                            className="mr-3 h-5 w-5"
-                                                        />
-                                                        <label htmlFor={`${qId}-${index}`} className="cursor-pointer flex-grow text-lg">
-                                                            {option}
-                                                        </label>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                            {submitted && (
-                                                <p className={`mt-4 ${answers[qId] === questions[qId].correctAnswer ? 'correct-answer' : 'incorrect-answer'}`}>
-                                                    {answers[qId] === questions[qId].correctAnswer
-                                                        ? '✓ 正確！'
-                                                        : `✗ 正確答案：${questions[qId].correctAnswer}`}
-                                                </p>
-                                            )}
-                                        </div>
-                                    ))}
-                                    
-                                    <div id="result-section" className="mt-8">
-                                        {!submitted ? (
-                                            <button 
-                                                onClick={handleSubmit} 
-                                                disabled={!isAllAnswered()}
-                                                className={isAllAnswered() ? 'btn-submit' : 'btn-submit disabled'}
-                                            >
-                                                {isAllAnswered() ? '📝 提交答案' : '⚠️ 請回答所有問題'}
-                                            </button>
-                                        ) : (
-                                            <div className="result-card p-6 rounded-lg my-6">
-                                                <p className="text-xl font-bold text-center p-3 rounded text-orange-600">
-                                                    {result}
-                                                </p>
-                                                <button 
-                                                    onClick={resetQuiz}
-                                                    className="btn-retry mt-4"
-                                                >
-                                                    🔄 再試一次
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                    
-                    <div className="quiz-footer">
-                        台語動物教學小遊戲 © 2025
+                <div className="flex flex-col items-center">
+                    <svg width={width} height={height} className="bg-white radar-chart-svg">
+                        {[...Array(levels)].map((_, i) => (
+                            <circle key={i} cx={centerX} cy={centerY} r={(radius / levels) * (i + 1)} fill="none" stroke="#9ca3af" strokeWidth="1" />
+                        ))}
+                        {fullPoints.map((p, i) => (
+                            <line key={i} x1={centerX} y1={centerY} x2={p.x} y2={p.y} stroke="#9ca3af" strokeWidth="1" />
+                        ))}
+                        <polygon points={points} fill="rgba(20, 184, 166, 0.2)" stroke="#0d9488" strokeWidth="3" />
+                        {dataValues.map((val, i) => {
+                             const x = centerX + radius * val * Math.cos(angleSlice * i - Math.PI / 2);
+                             const y = centerY + radius * val * Math.sin(angleSlice * i - Math.PI / 2);
+                             return (
+                                 <circle key={i} cx={x} cy={y} r="5" fill={val === 1 ? "#0d9488" : "#ef4444"} stroke="#fff" strokeWidth="1" />
+                             );
+                        })}
+                        {fullPoints.map((p, i) => {
+                             const textX = p.x + (p.x - centerX) * 0.35;
+                             const textY = p.y + (p.y - centerY) * 0.2;
+                             return (
+                                <text key={i} x={textX} y={textY} textAnchor="middle" dominantBaseline="middle" className="text-sm fill-black font-bold" style={{fontSize: '14px', fill: '#000'}}>{p.label}</text>
+                             );
+                        })}
+                    </svg>
+                    <div className="mt-2 text-xs flex gap-4 text-black font-bold">
+                        <span className="flex items-center"><div className="w-3 h-3 rounded-full bg-teal-600 mr-1 border border-black"></div> 正常 (外圈)</span>
+                        <span className="flex items-center"><div className="w-3 h-3 rounded-full bg-red-500 mr-1 border border-black"></div> 異常 (內縮)</span>
                     </div>
                 </div>
             );
         };
 
-        ReactDOM.createRoot(document.getElementById('root')).render(<TaiwaneseAnimalQuiz />);
+        // --- Main Component ---
+        function App() {
+          const [step, setStep] = useState(1);
+          const [patientData, setPatientData] = useState({
+            name: '', age: '', gender: 'male', id: '', chiefComplaint: '', visitDate: new Date().toISOString().split('T')[0], type: 'initial'
+          });
+          
+          const [initialResults, setInitialResults] = useState({});
+          const [visionChartDone, setVisionChartDone] = useState({ far: null, near: null }); // null, true(pass), false(fail)
+          const [reEvalResults, setReEvalResults] = useState({
+            ad8: Array(8).fill(false),
+            sppb: { balance: 0, gait: 0, chair: 0 },
+            mna: Array(6).fill(0),
+            gds: Array(15).fill(false),
+            meds: { poly: false, sleep: false, sideEffect: false },
+            social: { adl: false, living: false, lonely: false, fall: false }
+          });
+          
+          const reportRef = useRef(null);
+
+          // Logic for Vision
+          const isVisionAbnormal = () => {
+              // Rule 1: Self-report difficulty -> Yes (Abnormal)
+              if (initialResults['vis_1'] === true) return true;
+              
+              // Rule 2: Self-report OK -> Check Vision Chart
+              if (initialResults['vis_1'] === false) {
+                  // If chart test failed (either far or near) -> Abnormal
+                  if (visionChartDone.far === false || visionChartDone.near === false) return true;
+                  // If chart test passed -> Normal
+                  return false;
+              }
+              return false; // Default
+          };
+
+          const getDomainStatus = () => {
+            const status = {
+              // Cognition: Fail if orientation incorrect OR recall incorrect
+              cognition: !initialResults['cog_1'] || !initialResults['cog_2'] || !initialResults['cog_3'], 
+              mobility: initialResults['mob_1'], 
+              nutrition: initialResults['nut_1'] || initialResults['nut_2'],
+              vision: isVisionAbnormal(),
+              hearing: initialResults['hea_1'],
+              depression: initialResults['dep_1'] || initialResults['dep_2']
+            };
+            return status;
+          };
+
+          const domainStatus = getDomainStatus();
+          const needsReEval = Object.values(domainStatus).some(v => v);
+
+          const handleInitialChange = (id, value) => {
+            setInitialResults(prev => ({ ...prev, [id]: value }));
+          };
+
+          const calculateScores = () => {
+            const ad8Score = reEvalResults.ad8.filter(Boolean).length;
+            const sppbScore = Object.values(reEvalResults.sppb).reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            const mnaScore = reEvalResults.mna.reduce((a, b) => parseInt(a) + parseInt(b), 0);
+            const gdsScore = reEvalResults.gds.filter(Boolean).length;
+            return { ad8Score, sppbScore, mnaScore, gdsScore };
+          };
+
+          const scores = calculateScores();
+
+          // Scoring Logic Verification based on manual
+          const isSPPBAbnormal = scores.sppbScore < 10;
+          const isMNAAbnormal = scores.mnaScore < 12;
+          const isGDSAbnormal = scores.gdsScore >= 7; // Updated to 7
+          const isAD8Abnormal = scores.ad8Score >= 2;
+
+          const goNext = () => {
+            window.scrollTo(0, 0);
+            if (step === 2 && !needsReEval) {
+              setStep(4);
+            } else {
+              setStep(prev => prev + 1);
+            }
+          };
+
+          const goBack = () => {
+            window.scrollTo(0, 0);
+            setStep(prev => prev - 1);
+          };
+
+          const printReport = () => {
+            window.print();
+          };
+
+          // FIXED: Improved Image Download Function to eliminate white mask and ensure clarity
+          const downloadImage = () => {
+              if (reportRef.current) {
+                  html2canvas(reportRef.current, {
+                      scale: 2, // Keep high resolution
+                      useCORS: true,
+                      backgroundColor: "#ffffff", // Ensure solid white background
+                      logging: false, // Turn off logging for prod
+                      // IMPORTANT FIX: Inject print styles into the cloned document for high contrast and no shadows
+                      onclone: (clonedDoc) => {
+                          const style = clonedDoc.createElement('style');
+                          style.innerHTML = `
+                              .report-container {
+                                  color: #000000 !important;
+                                  background: #ffffff !important; /* Ensure solid background */
+                                  box-shadow: none !important; /* Remove shadow */
+                              }
+                              /* Force all text to black */
+                              .report-container h1, .report-container h2, .report-container h3, 
+                              .report-container p, .report-container span, .report-container div, 
+                              .report-container li, .report-container th, .report-container td,
+                              .report-container a {
+                                  color: #000000 !important;
+                              }
+                              /* Ensure borders are black */
+                              .report-container .border, .report-container .border-t, .report-container .border-b {
+                                  border-color: #000000 !important;
+                              }
+                              /* Lighten backgrounds for contrast and add borders */
+                              .bg-gray-100, .bg-gray-50, .bg-yellow-50, .bg-blue-100, .bg-purple-100, .bg-orange-100, .bg-teal-100, .bg-pink-100 {
+                                  background-color: #ffffff !important;
+                                  border: 1px solid #000000 !important; /* Add black border for definition */
+                                  color: #000000 !important;
+                              }
+                              /* Force border colors on colored cards */
+                              .border-l-purple-500, .border-l-blue-500, .border-l-orange-500, .border-l-teal-500, .border-l-pink-500, .border-l-yellow-500, .border-l-gray-500 {
+                                  border-left-color: #000000 !important;
+                              }
+                              .border-purple-200, .border-blue-200, .border-orange-200, .border-teal-200, .border-pink-200, .border-yellow-200, .border-gray-200 {
+                                   border-color: #000000 !important;
+                              }
+                               /* Hide buttons in image */
+                              .download-btn-group { display: none !important; }
+  
+                              /* --- SVG Handling (Crucial for avoiding black blobs) --- */
+                              /* General icons - make them black stroke */
+                              .report-container svg:not(.radar-chart-svg) {
+                                  stroke: #000000 !important;
+                                  color: #000000 !important;
+                                  fill: none !important;
+                              }
+  
+                              /* Radar Chart specific handling */
+                              /* Grid lines */
+                              .radar-chart-svg line, .radar-chart-svg circle[fill="none"] {
+                                  stroke: #666666 !important; /* Dark gray grid */
+                              }
+                              /* The data polygon area */
+                              .radar-chart-svg polygon {
+                                  fill: rgba(0, 0, 0, 0.1) !important; /* Light gray fill */
+                                  stroke: #000000 !important; /* Black outline */
+                              }
+                              /* Data points - Normal (was teal) */
+                              .radar-chart-svg circle[fill="#0d9488"] {
+                                   fill: #000000 !important;
+                              }
+                              /* Data points - Abnormal (was red) */
+                              .radar-chart-svg circle[fill="#ef4444"] {
+                                  fill: #ffffff !important;
+                                  stroke: #000000 !important;
+                                  stroke-width: 2px !important;
+                              }
+                              /* Radar labels */
+                              .radar-chart-svg text {
+                                  fill: #000000 !important;
+                                  font-weight: bold !important;
+                              }
+                          `;
+                          clonedDoc.head.appendChild(style);
+                      }
+                  }).then(canvas => {
+                      const link = document.createElement('a');
+                      link.download = `ICOPE評估報告_${patientData.name || '長者'}.jpg`;
+                      link.href = canvas.toDataURL('image/jpeg', 1.0);
+                      link.click();
+                  });
+              }
+          };
+
+          return (
+            <div className="min-h-screen bg-gray-50 text-gray-800 font-sans selection:bg-teal-100">
+              
+              <header className="bg-teal-600 text-white p-4 shadow-md print:bg-white print:text-black print:shadow-none print:border-b-2 print:border-black">
+                <div className="max-w-4xl mx-auto flex justify-between items-center">
+                  <div>
+                    <h1 className="text-2xl font-bold flex items-center gap-2">
+                      <ClipboardCheck className="w-8 h-8" />
+                      愛迪樂日間照顧中心
+                    </h1>
+                    <p className="text-sm opacity-90">ICOPE 長者功能評估篩檢系統 (新北泰山版)</p>
+                  </div>
+                  <div className="text-right text-xs print:hidden step-indicator">
+                    <span className="block opacity-75">步驟 {step} / 4</span>
+                  </div>
+                </div>
+              </header>
+
+              <main className="max-w-4xl mx-auto p-4 print:p-0">
+                {step === 1 && (
+                  <div className="bg-white rounded-lg shadow-lg p-6 animate-fade-in">
+                    <h2 className="text-xl font-bold text-teal-700 mb-4 border-b pb-2">1. 個案基本資料</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div><label className="block text-sm font-medium text-gray-700">姓名</label><input type="text" value={patientData.name} onChange={e => setPatientData({...patientData, name: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" /></div>
+                      <div><label className="block text-sm font-medium text-gray-700">性別</label><select value={patientData.gender} onChange={e => setPatientData({...patientData, gender: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"><option value="male">男</option><option value="female">女</option></select></div>
+                      <div><label className="block text-sm font-medium text-gray-700">出生年 (民國)</label><input type="text" placeholder="例如: 45" value={patientData.age} onChange={e => setPatientData({...patientData, age: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" /></div>
+                      <div><label className="block text-sm font-medium text-gray-700">主述問題 (Chief Complaint)</label><input type="text" placeholder="例如：最近常跌倒、記憶力變差..." value={patientData.chiefComplaint} onChange={e => setPatientData({...patientData, chiefComplaint: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" /></div>
+                      <div><label className="block text-sm font-medium text-gray-700">評估類型</label><select value={patientData.type} onChange={e => setPatientData({...patientData, type: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border"><option value="initial">初次評估</option><option value="followup">追蹤評估</option><option value="posttest">後測</option></select></div>
+                      <div><label className="block text-sm font-medium text-gray-700">評估日期</label><input type="date" value={patientData.visitDate} onChange={e => setPatientData({...patientData, visitDate: e.target.value})} className="mt-1 block w-full rounded-md border-gray-300 shadow-sm p-2 border" /></div>
+                    </div>
+                    <div className="mt-8 flex justify-end"><button onClick={goNext} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-2 px-6 rounded-full flex items-center transition">下一步 <ChevronRight className="ml-2" /></button></div>
+                  </div>
+                )}
+
+                {step === 2 && (
+                  <div className="bg-white rounded-lg shadow-lg p-6 animate-fade-in">
+                    <h2 className="text-xl font-bold text-teal-700 mb-4 border-b pb-2">2. 六力功能初評</h2>
+                    <div className="space-y-6">
+                        
+                      {/* Cognition - Manual Logic: Ask items -> Orientation -> Recall items */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Brain className="w-6 h-6 text-purple-600" /><h3 className="font-bold text-lg text-gray-800">認知功能 (Cognition)</h3></div>
+                          <div className="space-y-3">
+                              <p className="text-sm text-gray-600 bg-yellow-50 p-2 rounded">指導語:「我會說出三樣物品(鉛筆、汽車、書)，請您覆誦並記住，等一下會再問。」(覆誦正確才繼續)</p>
+                              <div className="flex justify-between items-center"><span className="text-gray-700">1. 定向力：今天的日期？(年、月、日都對才算對)</span>
+                                  <div className="flex gap-2"><button onClick={() => handleInitialChange('cog_2', true)} className={`px-3 py-1 border rounded ${initialResults['cog_2']===true ? 'bg-green-100 border-green-500' : 'bg-white'}`}>正確</button><button onClick={() => handleInitialChange('cog_2', false)} className={`px-3 py-1 border rounded ${initialResults['cog_2']===false ? 'bg-red-100 border-red-500' : 'bg-white'}`}>錯誤</button></div>
+                              </div>
+                              <div className="flex justify-between items-center"><span className="text-gray-700">2. 定向力：您現在在哪裡？</span>
+                                  <div className="flex gap-2"><button onClick={() => handleInitialChange('cog_3', true)} className={`px-3 py-1 border rounded ${initialResults['cog_3']===true ? 'bg-green-100 border-green-500' : 'bg-white'}`}>正確</button><button onClick={() => handleInitialChange('cog_3', false)} className={`px-3 py-1 border rounded ${initialResults['cog_3']===false ? 'bg-red-100 border-red-500' : 'bg-white'}`}>錯誤</button></div>
+                              </div>
+                              <p className="text-sm text-gray-600 bg-yellow-50 p-2 rounded">指導語:「請告訴我剛剛請您記住的那三樣物品是什麼？」</p>
+                              <div className="flex justify-between items-center"><span className="text-gray-700">3. 記憶力：是否能正確回答全部3項物品？</span>
+                                  <div className="flex gap-2"><button onClick={() => handleInitialChange('cog_1', true)} className={`px-3 py-1 border rounded ${initialResults['cog_1']===true ? 'bg-green-100 border-green-500' : 'bg-white'}`}>是 (Pass)</button><button onClick={() => handleInitialChange('cog_1', false)} className={`px-3 py-1 border rounded ${initialResults['cog_1']===false ? 'bg-red-100 border-red-500' : 'bg-white'}`}>否 (Fail)</button></div>
+                              </div>
+                          </div>
+                      </div>
+
+                      {/* Mobility */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Activity className="w-6 h-6 text-blue-600" /><h3 className="font-bold text-lg text-gray-800">行動能力 (Mobility)</h3></div>
+                          <div className="flex justify-between items-center"><span className="text-gray-700">雙手抱胸，連續起立坐下5次。是否無法在12秒內完成？</span>
+                              <div className="flex gap-2"><button onClick={() => handleInitialChange('mob_1', true)} className={`px-3 py-1 border rounded ${initialResults['mob_1']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是 (異常)</button><button onClick={() => handleInitialChange('mob_1', false)} className={`px-3 py-1 border rounded ${initialResults['mob_1']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否 (正常)</button></div>
+                          </div>
+                      </div>
+
+                      {/* Nutrition */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Utensils className="w-6 h-6 text-orange-600" /><h3 className="font-bold text-lg text-gray-800">營養狀況 (Nutrition)</h3></div>
+                          <div className="space-y-2">
+                              <div className="flex justify-between items-center"><span className="text-gray-700">1. 過去三個月，體重是否非自願減輕3公斤以上？</span><div className="flex gap-2"><button onClick={() => handleInitialChange('nut_1', true)} className={`px-3 py-1 border rounded ${initialResults['nut_1']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是</button><button onClick={() => handleInitialChange('nut_1', false)} className={`px-3 py-1 border rounded ${initialResults['nut_1']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否</button></div></div>
+                              <div className="flex justify-between items-center"><span className="text-gray-700">2. 過去三個月，是否食慾不振？</span><div className="flex gap-2"><button onClick={() => handleInitialChange('nut_2', true)} className={`px-3 py-1 border rounded ${initialResults['nut_2']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是</button><button onClick={() => handleInitialChange('nut_2', false)} className={`px-3 py-1 border rounded ${initialResults['nut_2']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否</button></div></div>
+                          </div>
+                      </div>
+
+                      {/* Vision - Updated Logic */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Eye className="w-6 h-6 text-teal-600" /><h3 className="font-bold text-lg text-gray-800">視力 (Vision)</h3></div>
+                          <div className="flex justify-between items-center mb-2"><span className="text-gray-700">1. 自覺眼睛看遠、看近或閱讀是否有困難？</span>
+                              <div className="flex gap-2"><button onClick={() => { handleInitialChange('vis_1', true); setVisionChartDone({far:null, near:null}); }} className={`px-3 py-1 border rounded ${initialResults['vis_1']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是 (異常)</button><button onClick={() => handleInitialChange('vis_1', false)} className={`px-3 py-1 border rounded ${initialResults['vis_1']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否</button></div>
+                          </div>
+                          {initialResults['vis_1'] === false && (
+                              <div className="ml-4 p-3 bg-white border rounded">
+                                  <p className="text-sm font-bold text-gray-700 mb-2">請執行WHO簡單視力圖測試：</p>
+                                  <div className="flex justify-between items-center mb-1"><span className="text-sm">遠距離測試 (3公尺，四個小E)</span><div className="flex gap-2"><button onClick={() => setVisionChartDone(p=>({...p, far:true}))} className={`text-xs px-2 py-1 border rounded ${visionChartDone.far===true ? 'bg-green-100 border-green-500' : ''}`}>通過</button><button onClick={() => setVisionChartDone(p=>({...p, far:false}))} className={`text-xs px-2 py-1 border rounded ${visionChartDone.far===false ? 'bg-red-100 border-red-500' : ''}`}>未通過</button></div></div>
+                                  <div className="flex justify-between items-center"><span className="text-sm">近距離測試 (閱讀距離，三個大E)</span><div className="flex gap-2"><button onClick={() => setVisionChartDone(p=>({...p, near:true}))} className={`text-xs px-2 py-1 border rounded ${visionChartDone.near===true ? 'bg-green-100 border-green-500' : ''}`}>通過</button><button onClick={() => setVisionChartDone(p=>({...p, near:false}))} className={`text-xs px-2 py-1 border rounded ${visionChartDone.near===false ? 'bg-red-100 border-red-500' : ''}`}>未通過</button></div></div>
+                              </div>
+                          )}
+                      </div>
+
+                      {/* Hearing - Updated Instruction */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Ear className="w-6 h-6 text-pink-600" /><h3 className="font-bold text-lg text-gray-800">聽力 (Hearing)</h3></div>
+                          <p className="text-sm text-gray-500 mb-2">請執行氣音測試：在長者後方一手臂距離，發出氣音數字(如 6,1,9 或 2,5,7)。</p>
+                          <div className="flex justify-between items-center"><span className="text-gray-700">是否無法正確複誦數字？(任一耳聽不到)</span>
+                              <div className="flex gap-2"><button onClick={() => handleInitialChange('hea_1', true)} className={`px-3 py-1 border rounded ${initialResults['hea_1']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是 (異常)</button><button onClick={() => handleInitialChange('hea_1', false)} className={`px-3 py-1 border rounded ${initialResults['hea_1']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否 (正常)</button></div>
+                          </div>
+                      </div>
+
+                      {/* Depression */}
+                      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                          <div className="flex items-center gap-2 mb-3"><Smile className="w-6 h-6 text-yellow-600" /><h3 className="font-bold text-lg text-gray-800">憂鬱 (Depression)</h3></div>
+                          <div className="space-y-2">
+                              <div className="flex justify-between items-center"><span className="text-gray-700">1. 過去兩週，是否常感到厭煩或沒有希望？</span><div className="flex gap-2"><button onClick={() => handleInitialChange('dep_1', true)} className={`px-3 py-1 border rounded ${initialResults['dep_1']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是</button><button onClick={() => handleInitialChange('dep_1', false)} className={`px-3 py-1 border rounded ${initialResults['dep_1']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否</button></div></div>
+                              <div className="flex justify-between items-center"><span className="text-gray-700">2. 過去兩週，是否減少很多的活動和興趣？</span><div className="flex gap-2"><button onClick={() => handleInitialChange('dep_2', true)} className={`px-3 py-1 border rounded ${initialResults['dep_2']===true ? 'bg-red-100 border-red-500' : 'bg-white'}`}>是</button><button onClick={() => handleInitialChange('dep_2', false)} className={`px-3 py-1 border rounded ${initialResults['dep_2']===false ? 'bg-green-100 border-green-500' : 'bg-white'}`}>否</button></div></div>
+                          </div>
+                      </div>
+
+                    </div>
+                    <div className="mt-8 flex justify-between"><button onClick={goBack} className="bg-gray-500 text-white font-bold py-2 px-6 rounded-full flex items-center">上一步</button><button onClick={goNext} className="bg-teal-600 text-white font-bold py-2 px-6 rounded-full flex items-center">{needsReEval ? '進入異常複評' : '查看結果'} <ChevronRight className="ml-2" /></button></div>
+                  </div>
+                )}
+
+                {step === 3 && (
+                  <div className="bg-white rounded-lg shadow-lg p-6 animate-fade-in">
+                    <h2 className="text-xl font-bold text-teal-700 mb-4 border-b pb-2">3. 異常項目複評 & 共同評估</h2>
+                    
+                    {/* Mandatory Assessments if ANY initial screen failed */}
+                    {needsReEval && (
+                        <div className="mb-8 space-y-6">
+                            <div className="border-l-4 border-gray-600 pl-4 py-2 bg-gray-50">
+                                <h3 className="font-bold text-lg text-gray-800 mb-2 flex items-center gap-2"><Pill /> 用藥評估 (Medication)</h3>
+                                <p className="text-xs text-gray-500 mb-2">手冊規定：初評任一項異常者，需進行此評估。</p>
+                                <div className="space-y-2">
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.meds.poly} onChange={e=>setReEvalResults(p=>({...p, meds:{...p.meds, poly:e.target.checked}}))} className="w-5 h-5"/><span>每天使用藥物(含中藥)是否 10 種(含)以上？</span></label>
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.meds.sleep} onChange={e=>setReEvalResults(p=>({...p, meds:{...p.meds, sleep:e.target.checked}}))} className="w-5 h-5"/><span>是否服用止痛藥或安眠藥？</span></label>
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.meds.sideEffect} onChange={e=>setReEvalResults(p=>({...p, meds:{...p.meds, sideEffect:e.target.checked}}))} className="w-5 h-5"/><span>是否有藥物副作用(暈眩、口乾、低血壓)？</span></label>
+                                </div>
+                            </div>
+
+                            <div className="border-l-4 border-gray-600 pl-4 py-2 bg-gray-50">
+                                <h3 className="font-bold text-lg text-gray-800 mb-2 flex items-center gap-2"><Users /> 社會照護與支持評估</h3>
+                                <p className="text-xs text-gray-500 mb-2">手冊規定：初評任一項異常者，需進行此評估。</p>
+                                <div className="space-y-2">
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.social.adl} onChange={e=>setReEvalResults(p=>({...p, social:{...p.social, adl:e.target.checked}}))} className="w-5 h-5"/><span>日常生活困難(如廁、穿衣、沐浴、進食困難) → 轉介長照</span></label>
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.social.living} onChange={e=>setReEvalResults(p=>({...p, social:{...p.social, living:e.target.checked}}))} className="w-5 h-5"/><span>居住或財務困難 → 轉介社工</span></label>
+                                    <label className="flex items-center space-x-2"><input type="checkbox" checked={reEvalResults.social.lonely} onChange={e=>setReEvalResults(p=>({...p, social:{...p.social, lonely:e.target.checked}}))} className="w-5 h-5"/><span>感覺孤獨或缺乏社交活動 → 轉介社區據點</span></label>
+                                    <label className="flex items-center space-x-2 mt-2 pt-2 border-t"><span className="mr-2">近半年是否有跌倒？</span><input type="checkbox" checked={reEvalResults.social.fall} onChange={e=>setReEvalResults(p=>({...p, social:{...p.social, fall:e.target.checked}}))} className="w-5 h-5"/><span>是</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="space-y-8">
+                      {domainStatus.cognition && <div className="border-l-4 border-purple-500 pl-4 py-2"><h3 className="font-bold text-lg text-purple-700 mb-2">認知複評 (AD8)</h3><div className="grid gap-2">{AD8_QUESTIONS.map((q, idx) => (<label key={idx} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded cursor-pointer"><input type="checkbox" checked={reEvalResults.ad8[idx]} onChange={(e) => {const newAd8 = [...reEvalResults.ad8]; newAd8[idx] = e.target.checked; setReEvalResults({...reEvalResults, ad8: newAd8});}} className="w-5 h-5 text-purple-600" /><span>{q}</span></label>))}</div></div>}
+                      {domainStatus.mobility && <div className="border-l-4 border-blue-500 pl-4 py-2"><h3 className="font-bold text-lg text-blue-700 mb-2">行動複評 (SPPB)</h3><div className="grid gap-4 md:grid-cols-3"><div className="bg-gray-50 p-3 rounded"><label>平衡測試 (0-4)</label><select className="w-full border p-1" value={reEvalResults.sppb.balance} onChange={(e) => setReEvalResults({...reEvalResults, sppb: {...reEvalResults.sppb, balance: e.target.value}})}><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><div className="bg-gray-50 p-3 rounded"><label>4米行走 (0-4)</label><select className="w-full border p-1" value={reEvalResults.sppb.gait} onChange={(e) => setReEvalResults({...reEvalResults, sppb: {...reEvalResults.sppb, gait: e.target.value}})}><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div><div className="bg-gray-50 p-3 rounded"><label>椅子起立 (0-4)</label><select className="w-full border p-1" value={reEvalResults.sppb.chair} onChange={(e) => setReEvalResults({...reEvalResults, sppb: {...reEvalResults.sppb, chair: e.target.value}})}><option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option></select></div></div></div>}
+                      {domainStatus.nutrition && <div className="border-l-4 border-orange-500 pl-4 py-2"><h3 className="font-bold text-lg text-orange-700 mb-2">營養複評 (MNA-SF)</h3><div className="space-y-3">{MNA_SF_QUESTIONS.map((item, idx) => (<div key={idx} className="bg-gray-50 p-3 rounded"><p className="font-medium mb-2">{item.q}</p><div className="flex flex-wrap gap-2">{item.options.map((opt, optIdx) => (<button key={optIdx} onClick={() => {const newMna = [...reEvalResults.mna]; newMna[idx] = opt.score; setReEvalResults({...reEvalResults, mna: newMna});}} className={`px-3 py-1 text-sm border rounded ${reEvalResults.mna[idx] === opt.score ? 'bg-orange-500 text-white' : 'bg-white'}`}>{opt.score}: {opt.text}</button>))}</div></div>))}</div></div>}
+                      {domainStatus.depression && <div className="border-l-4 border-yellow-500 pl-4 py-2"><h3 className="font-bold text-lg text-yellow-700 mb-2">憂鬱複評 (GDS-15)</h3><div className="grid md:grid-cols-2 gap-2">{GDS_15_QUESTIONS.map((q, idx) => (<label key={idx} className="flex items-center space-x-3 p-2 hover:bg-gray-50 rounded border cursor-pointer"><input type="checkbox" checked={reEvalResults.gds[idx]} onChange={(e) => {const newGds = [...reEvalResults.gds]; newGds[idx] = e.target.checked; setReEvalResults({...reEvalResults, gds: newGds});}} className="w-5 h-5 text-yellow-600" /><span>{q}</span></label>))}</div></div>}
+                      {(domainStatus.vision || domainStatus.hearing) && <div className="border-l-4 border-gray-400 pl-4 py-2 bg-gray-50"><p>視力/聽力異常：建議直接轉介專科醫師。</p></div>}
+                    </div>
+                    <div className="mt-8 flex justify-between"><button onClick={goBack} className="bg-gray-500 text-white font-bold py-2 px-6 rounded-full flex items-center">上一步</button><button onClick={goNext} className="bg-teal-600 text-white font-bold py-2 px-6 rounded-full flex items-center">產出報告 <ChevronRight className="ml-2" /></button></div>
+                  </div>
+                )}
+
+                {/* Step 4: Final Report */}
+                {step === 4 && (
+                  <div className="report-container bg-white rounded-lg shadow-lg p-8 animate-fade-in print:shadow-none print:w-full print:p-0" ref={reportRef} style={{background: 'white', color: 'black'}}>
+                    
+                    <div className="text-center border-b-2 border-teal-600 pb-4 mb-6">
+                      <h2 className="text-3xl font-bold text-gray-900">ICOPE 長者功能評估結果報告書</h2>
+                      <p className="text-gray-700 mt-2">新北市泰山區資源整合版</p>
+                    </div>
+
+                    <div className="bg-gray-100 p-4 rounded mb-6 border border-gray-300 print:bg-white print:border-black">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-black">
+                        <div><span className="font-bold">姓名:</span> {patientData.name}</div>
+                        <div><span className="font-bold">性別:</span> {patientData.gender === 'male' ? '男' : '女'}</div>
+                        <div><span className="font-bold">年齡:</span> {patientData.age}</div>
+                        <div><span className="font-bold">日期:</span> {patientData.visitDate}</div>
+                        <div className="col-span-2"><span className="font-bold">主述問題:</span> {patientData.chiefComplaint || '無'}</div>
+                      </div>
+                    </div>
+                    
+                    {/* Visual Chart Area */}
+                    <div className="mb-8 flex flex-col md:flex-row gap-8 items-start">
+                        <div className="flex-1 w-full">
+                           <h3 className="text-xl font-bold text-teal-800 mb-3 border-l-4 border-teal-600 pl-3 flex items-center gap-2"><ChartPie /> 評估結果總表</h3>
+                           <table className="w-full text-left border-collapse text-black">
+                            <thead><tr className="bg-gray-200 text-black border-b border-gray-400"><th className="p-3">面向</th><th className="p-3">初評</th><th className="p-3">複評結果</th><th className="p-3">建議</th></tr></thead>
+                            <tbody className="text-sm">
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Brain className="w-4 h-4" /> 認知</td><td className={`p-3 font-bold ${domainStatus.cognition ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.cognition ? '異常' : '通過'}</td><td className="p-3">{domainStatus.cognition ? `AD8: ${scores.ad8Score}分 (${isAD8Abnormal ? '異常' : '正常'})` : '-'}</td><td className="p-3">{domainStatus.cognition ? '轉介神經內科' : '定期追蹤'}</td></tr>
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Activity className="w-4 h-4" /> 行動</td><td className={`p-3 font-bold ${domainStatus.mobility ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.mobility ? '異常' : '通過'}</td><td className="p-3">{domainStatus.mobility ? `SPPB: ${scores.sppbScore}分 (${isSPPBAbnormal ? '異常' : '正常'})` : '-'}</td><td className="p-3">{domainStatus.mobility ? '轉介復健/體能' : '定期追蹤'}</td></tr>
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Utensils className="w-4 h-4" /> 營養</td><td className={`p-3 font-bold ${domainStatus.nutrition ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.nutrition ? '異常' : '通過'}</td><td className="p-3">{domainStatus.nutrition ? `MNA: ${scores.mnaScore}分 (${isMNAAbnormal ? '異常' : '正常'})` : '-'}</td><td className="p-3">{domainStatus.nutrition ? '轉介營養諮詢' : '定期追蹤'}</td></tr>
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Eye className="w-4 h-4" /> 視力</td><td className={`p-3 font-bold ${domainStatus.vision ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.vision ? '異常' : '通過'}</td><td className="p-3">-</td><td className="p-3">{domainStatus.vision ? '轉介眼科' : '定期追蹤'}</td></tr>
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Ear className="w-4 h-4" /> 聽力</td><td className={`p-3 font-bold ${domainStatus.hearing ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.hearing ? '異常' : '通過'}</td><td className="p-3">-</td><td className="p-3">{domainStatus.hearing ? '轉介耳鼻喉' : '定期追蹤'}</td></tr>
+                              <tr className="border-b border-gray-300"><td className="p-3 flex items-center gap-2"><Smile className="w-4 h-4" /> 憂鬱</td><td className={`p-3 font-bold ${domainStatus.depression ? 'text-red-700' : 'text-green-700'}`}>{domainStatus.depression ? '異常' : '通過'}</td><td className="p-3">{domainStatus.depression ? `GDS: ${scores.gdsScore}分 (${isGDSAbnormal ? '異常' : '正常'})` : '-'}</td><td className="p-3">{domainStatus.depression ? '轉介身心科' : '定期追蹤'}</td></tr>
+                            </tbody>
+                          </table>
+                          {needsReEval && (
+                              <div className="mt-4 p-3 bg-gray-100 border rounded text-sm text-black">
+                                  <p className="font-bold mb-2">其他評估結果：</p>
+                                  <ul className="list-disc pl-5">
+                                      <li>用藥評估: {Object.values(reEvalResults.meds).some(v=>v) ? <span className="text-red-700 font-bold">異常 (需諮詢藥師/醫師)</span> : '無明顯異常'}</li>
+                                      <li>社會照護: {Object.values(reEvalResults.social).some(v=>v) ? <span className="text-red-700 font-bold">異常 (需轉介社工/長照)</span> : '無明顯需求'}</li>
+                                      {reEvalResults.social.fall && <li><span className="text-red-700 font-bold">注意：近半年有跌倒紀錄</span></li>}
+                                  </ul>
+                              </div>
+                          )}
+                        </div>
+                        
+                        <div className="flex-1 w-full flex justify-center pt-4">
+                            <RadarChart status={domainStatus} />
+                        </div>
+                    </div>
+
+                    {/* Resources */}
+                    {needsReEval && (
+                       <div className="mb-8 break-inside-avoid text-black">
+                         <h3 className="text-xl font-bold text-orange-800 mb-3 border-l-4 border-orange-600 pl-3 flex items-center gap-2"><MapPin className="w-5 h-5" /> 介入計畫與新北泰山區轉介資源 & 衛教</h3>
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            
+                            {/* Cognition Card */}
+                            {domainStatus.cognition && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-purple-500 border-gray-300">
+                                    <h4 className="font-bold text-purple-800 mb-2 border-b border-purple-200 pb-1 flex justify-between items-center">
+                                        認知功能資源
+                                        <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.cognition.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.cognition.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Mobility Card */}
+                            {domainStatus.mobility && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-blue-500 border-gray-300">
+                                    <h4 className="font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1 flex justify-between items-center">
+                                        行動能力資源
+                                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.mobility.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.mobility.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Nutrition Card */}
+                            {domainStatus.nutrition && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-orange-500 border-gray-300">
+                                    <h4 className="font-bold text-orange-800 mb-2 border-b border-orange-200 pb-1 flex justify-between items-center">
+                                        營養資源
+                                        <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.nutrition.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.nutrition.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Vision Card */}
+                            {domainStatus.vision && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-teal-500 border-gray-300">
+                                    <h4 className="font-bold text-teal-800 mb-2 border-b border-teal-200 pb-1 flex justify-between items-center">
+                                        視力資源
+                                        <span className="text-xs bg-teal-100 text-teal-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.vision.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.vision.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Hearing Card */}
+                            {domainStatus.hearing && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-pink-500 border-gray-300">
+                                    <h4 className="font-bold text-pink-800 mb-2 border-b border-pink-200 pb-1 flex justify-between items-center">
+                                        聽力資源
+                                        <span className="text-xs bg-pink-100 text-pink-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.hearing.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.hearing.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Depression Card */}
+                            {domainStatus.depression && (
+                                <div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-yellow-500 border-gray-300">
+                                    <h4 className="font-bold text-yellow-800 mb-2 border-b border-yellow-200 pb-1 flex justify-between items-center">
+                                        心理支持資源
+                                        <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">異常建議</span>
+                                    </h4>
+                                    <div className="mb-3">
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【轉介資源】</p>
+                                        <ul className="text-sm space-y-2 text-black">
+                                            {TAISHAN_RESOURCES.depression.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="font-bold text-sm mb-1 text-gray-700">【推薦衛教影片/文章】</p>
+                                        <ul className="text-sm space-y-1 text-blue-700 list-disc pl-4">
+                                            {EDUCATION_RESOURCES.depression.map((res, i) => (
+                                                <li key={i}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="hover:underline flex items-center gap-1">
+                                                        {res.type === 'video' ? <Video className="w-3 h-3" /> : '📄'} {res.title}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+
+                            {(Object.values(reEvalResults.social).some(v=>v)) && (<div className="border rounded p-4 bg-white shadow-sm border-l-4 border-l-gray-500 border-gray-300"><h4 className="font-bold text-gray-800 mb-2 border-b border-gray-200 pb-1">社會資源轉介</h4><ul className="text-sm space-y-2 text-black">{TAISHAN_RESOURCES.social.map((r, i) => (<li key={i} className="flex flex-col mb-1"><span className="font-bold flex justify-between">{r.name} <span className="text-xs text-white bg-gray-600 px-1 rounded">{r.type}</span></span><span className="text-gray-700 text-xs">{r.address}</span><span className="text-teal-800 text-xs">{r.phone}</span></li>))}</ul></div>)}
+                         </div>
+                       </div>
+                    )}
+
+                    <div className="mt-8 border-t border-black pt-4 text-black">
+                      <div className="flex justify-between items-end">
+                        <div className="text-sm">
+                           <p className="font-bold">追蹤計畫：</p>
+                           <p>□ 安排一個月後 ({new Date(new Date().setDate(new Date().getDate() + 30)).toISOString().split('T')[0]}) 追蹤。</p>
+                        </div>
+                        <div className="text-right">
+                           <div className="mb-8 border-b border-black w-32 inline-block"></div>
+                           <p className="text-sm">評估人員簽章</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="mt-8 pt-4 border-t border-gray-300 text-center text-xs text-gray-600">
+                        © 2025 愛迪樂日間照顧中心 | ICOPE長者量六力評估及轉介系統
+                    </div>
+
+                    <div className="download-btn-group mt-8 flex flex-col sm:flex-row gap-4 justify-center print:hidden">
+                      <button onClick={printReport} className="bg-teal-600 hover:bg-teal-700 text-white font-bold py-3 px-8 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition">
+                        <Printer className="mr-2" /> 下載 PDF / 列印
+                      </button>
+                      <button onClick={downloadImage} className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full flex items-center justify-center shadow-lg transform hover:scale-105 transition">
+                        <Download className="mr-2" /> 下載圖片 (.jpg)
+                      </button>
+                      <button onClick={() => {if(confirm("確定要重新開始嗎？未儲存的資料將會遺失。")) {window.location.reload();}}} className="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-8 rounded-full flex items-center justify-center">重新評估</button>
+                    </div>
+
+                  </div>
+                )}
+
+              </main>
+
+              <footer className="bg-gray-800 text-white p-4 mt-8 text-center text-sm print:hidden">
+                <p>© 2025 愛迪樂日間照顧中心 | ICOPE長者量六力評估及轉介系統</p>
+              </footer>
+            </div>
+          );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
